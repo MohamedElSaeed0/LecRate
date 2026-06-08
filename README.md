@@ -13,9 +13,3 @@
 - **Frontend**: HTML5, Vanilla CSS, Vanilla JavaScript, Chart.js
 - **Database**: Microsoft SQL Server (EF Core)
 
-## 💻 كيفية التشغيل
-1. قم بضبط كود الاتصال بقاعدة البيانات في `appsettings.json`.
-2. قم بتشغيل الأمر التالي في سطر الأوامر لبناء وتشغيل المشروع:
-   ```bash
-   dotnet run
-   ```
