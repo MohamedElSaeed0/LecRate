@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام تقييم المحاضرين - مرحباً بك</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --secondary: #0EA5E9;
+            --accent: #F43F5E;
+            --bg-dark: #0F172A;
+            --text-light: #F8FAFC;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* تأثيرات الخلفية المتحركة */
+        .bg-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .shape {
+            position: absolute;
+            filter: blur(80px);
+            opacity: 0.6;
+            animation: float 20s infinite alternate;
+        }
+
+        .shape-1 {
+            width: 600px;
+            height: 600px;
+            background: rgba(79, 70, 229, 0.4);
+            top: -200px;
+            right: -100px;
+            border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+        }
+
+        .shape-2 {
+            width: 500px;
+            height: 500px;
+            background: rgba(14, 165, 233, 0.3);
+            bottom: -100px;
+            left: -100px;
+            border-radius: 60% 40% 30% 70% / 50% 30% 70% 40%;
+            animation-delay: -5s;
+        }
+
+        .shape-3 {
+            width: 400px;
+            height: 400px;
+            background: rgba(244, 63, 94, 0.2);
+            top: 40%;
+            left: 40%;
+            border-radius: 50%;
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(50px, 30px) rotate(10deg); }
+            100% { transform: translate(-30px, 80px) rotate(-10deg); }
+        }
+
+        /* المحتوى الرئيسي */
+        .hero {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-content {
+            text-align: center;
+            max-width: 800px;
+            animation: slideUpFade 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+
+        @keyframes slideUpFade {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 24px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            animation: pulse-glow 2s infinite alternate;
+        }
+
+        @keyframes pulse-glow {
+            from { box-shadow: 0 0 10px rgba(14, 165, 233, 0.2); }
+            to { box-shadow: 0 0 20px rgba(14, 165, 233, 0.6); }
+        }
+
+        h1 {
+            font-size: 4.5rem;
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            color: white;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            letter-spacing: -1px;
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #38BDF8 0%, #818CF8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: inline-block;
+        }
+
+        p.subtitle {
+            font-size: 1.3rem;
+            color: #CBD5E1;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+            font-weight: 500;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn-start {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            text-decoration: none;
+            padding: 18px 45px;
+            border-radius: 50px;
+            font-size: 1.25rem;
+            font-weight: 800;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-start::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: all 0.6s ease;
+        }
+
+        .btn-start:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 20px 35px rgba(79, 70, 229, 0.6);
+        }
+
+        .btn-start:hover::after {
+            left: 100%;
+        }
+
+        .btn-start i {
+            transition: transform 0.3s ease;
+        }
+
+        .btn-start:hover i {
+            transform: translateX(-5px);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+            animation: slideUpFade 1s cubic-bezier(0.2, 0.8, 0.2, 1) 0.3s forwards;
+            opacity: 0;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 24px;
+            text-align: center;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(79, 70, 229, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: var(--secondary);
+            margin: 0 auto 20px;
+            box-shadow: inset 0 0 10px rgba(79, 70, 229, 0.3);
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: white;
+            font-weight: 700;
+        }
+
+        .feature-card p {
+            color: #94A3B8;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Loading Overlay للمرحلة الانتقالية */
+        .page-transition {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-dark);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .page-transition.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: var(--secondary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.8rem; }
+            .features { grid-template-columns: 1fr; padding: 1rem; }
+            .hero { padding: 1rem; }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- أشكال متوهجة في الخلفية -->
+    <div class="bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+
+    <!-- المحتوى المرئي -->
+    <main class="hero">
+        <div class="hero-content">
+            <div class="badge">
+                <i class="fas fa-star"></i> الإصدار الجديد 2026
+            </div>
+            
+            <h1>نظام تقييم المحاضرين <br><span class="text-gradient">الشامل والذكي</span></h1>
+            
+            <p class="subtitle">
+                منصة رقمية متطورة تتيح للطلاب إبداء آرائهم بموضوعية تامة، وتقدم للإدارة والمحاضرين رؤى تحليلية دقيقة للارتقاء بجودة العملية التعليمية.
+            </p>
+            
+            <a href="#" class="btn-start" onclick="navigateToLogin(event)">
+                دخول للنظام <i class="fas fa-arrow-left"></i>
+            </a>
+        </div>
+    </main>
+
+    <!-- مميزات النظام -->
+    <section class="features">
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <h3>سرية تامة</h3>
+            <p>نضمن هوية مجهولة للطلاب لتوفير بيئة شفافة وآمنة للتقييم الموضوعي.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon" style="color: #10B981; background: rgba(16, 185, 129, 0.1);">
+                <i class="fas fa-bolt"></i>
+            </div>
+            <h3>سرعة وأداء</h3>
+            <p>واجهة مستخدم عصرية تعمل بسرعات فائقة لتجربة استخدام لا مثيل لها.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon" style="color: #F43F5E; background: rgba(244, 63, 94, 0.1);">
+                <i class="fas fa-chart-pie"></i>
+            </div>
+            <h3>إحصائيات دقيقة</h3>
+            <p>تقارير وتحليلات رسومية لحظية للإدارة لمتابعة مؤشرات الأداء بسهولة.</p>
+        </div>
+    </section>
+
+    <!-- شاشة الانتقال -->
+    <div class="page-transition" id="transitionOverlay">
+        <div class="loader"></div>
+        <h3 style="color: white; font-weight: 600; font-size: 1.2rem;">جاري التحضير...</h3>
+    </div>
+
+    <script>
+        function navigateToLogin(e) {
+            e.preventDefault();
+            const overlay = document.getElementById('transitionOverlay');
+            overlay.classList.add('active');
+            
+            
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 800);
+        }
+
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول - نظام تقييم المحاضرين</title>
+    <!-- خطوط جوجل (Cairo) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../frontend/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* التركيز على واجهة تسجيل دخول مذهلة (Dark/Glass Theme) */
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            /* لمنع السكرول في شاشة اللوجين */
+        }
+
+        .login-super-container {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #0F172A;
+            /* Slate 900 */
+            position: relative;
+        }
+
+        /* شبكة خلفية متحركة */
+        .cyber-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(79, 70, 229, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(79, 70, 229, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: 0;
+            transform: perspective(500px) rotateX(60deg) translateY(-100px) translateZ(-200px);
+            animation: gridMove 20s linear infinite;
+            opacity: 0.4;
+        }
+
+        @keyframes gridMove {
+            0% {
+                transform: perspective(500px) rotateX(60deg) translateY(0) translateZ(-200px);
+            }
+
+            100% {
+                transform: perspective(500px) rotateX(60deg) translateY(40px) translateZ(-200px);
+            }
+        }
+
+        /* دوائر الضوء المُبهرة */
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            z-index: 0;
+        }
+
+        .glow-1 {
+            width: 400px;
+            height: 400px;
+            background: rgba(79, 70, 229, 0.5);
+            /* Primary */
+            top: -100px;
+            right: -100px;
+            animation: pulse-slow 8s infinite alternate;
+        }
+
+        .glow-2 {
+            width: 350px;
+            height: 350px;
+            background: rgba(14, 165, 233, 0.4);
+            /* Sky */
+            bottom: -50px;
+            left: -50px;
+            animation: pulse-slow 10s infinite alternate-reverse;
+        }
+
+        @keyframes pulse-slow {
+            0% {
+                transform: scale(1) translate(0, 0);
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: scale(1.2) translate(-20px, 20px);
+                opacity: 0.8;
+            }
+        }
+
+        /* بطاقة تسجيل الدخول الفاخرة */
+        .premium-login-card {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            border-left: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 50px 45px;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.05);
+            z-index: 10;
+            position: relative;
+            animation: scaleIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            opacity: 0;
+            transform: scale(0.9) translateY(20px);
+        }
+
+        @keyframes scaleIn {
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        /* الهيدر داخل البطاقة */
+        .brand-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .brand-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+            margin: 0 auto 20px;
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.5);
+            transform: rotate(-10deg);
+            transition: transform 0.5s ease;
+        }
+
+        .premium-login-card:hover .brand-icon {
+            transform: rotate(0deg) scale(1.05);
+        }
+
+        .brand-header h1 {
+            color: white;
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-header p {
+            color: #94A3B8;
+            font-size: 0.95rem;
+        }
+
+        /* حقول الإدخال المحسنة */
+        .form-group {
+            margin-bottom: 22px;
+            position: relative;
+        }
+
+        .form-label {
+            color: #E2E8F0;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .input-icon-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748B;
+            font-size: 1.1rem;
+            transition: color 0.3s ease;
+            pointer-events: none;
+        }
+
+        .form-control-pro {
+            width: 100%;
+            padding: 14px 18px 14px 45px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            color: white;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-control-pro::placeholder {
+            color: #475569;
+        }
+
+        .form-control-pro:focus {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: var(--secondary);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.15);
+        }
+
+        .form-control-pro:focus+.input-icon {
+            color: var(--secondary);
+        }
+
+        /* سلكت قائمة منسدلة خاصة */
+        select.form-control-pro {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394A3B8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 20px;
+            padding-right: 40px;
+        }
+
+        select.form-control-pro option {
+            background-color: #0F172A;
+            color: white;
+            padding: 15px;
+        }
+
+        /* زر الدخول المتميز */
+        .btn-submit-pro {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 1.15rem;
+            font-weight: 800;
+            font-family: inherit;
+            cursor: pointer;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-submit-pro::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .btn-submit-pro:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(79, 70, 229, 0.6);
+        }
+
+        .btn-submit-pro:hover::before {
+            left: 100%;
+        }
+
+        .btn-submit-pro:active {
+            transform: translateY(0);
+        }
+
+        /* تنبيهات الخطأ (Toasts المخصصة الدارك) */
+        #alertBox {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: rgba(239, 68, 68, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #FCA5A5;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 100;
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.2);
+            pointer-events: none;
+        }
+
+        #alertBox.show {
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-super-container">
+        <!-- الخفيات والخلايا -->
+        <div class="cyber-grid"></div>
+        <div class="glow-orb glow-1"></div>
+        <div class="glow-orb glow-2"></div>
+
+        <!-- أداة التنبيه -->
+        <div id="alertBox">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="alertMessage">رسالة الخطأ</span>
+        </div>
+
+        <!-- الفورم المركزي -->
+        <div class="premium-login-card">
+            <div class="brand-header">
+                <div class="brand-icon">
+                    <i class="fas fa-fingerprint"></i>
+                </div>
+                <h1>نظام تقييم المحاضرين</h1>
+                <p>قم بتسجيل الدخول للوصول لبوابتك</p>
+            </div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label">نوع الحساب</label>
+                    <div class="input-icon-wrapper">
+                        <select class="form-control-pro" id="role" required>
+                            <option value="student">طالب (Student)</option>
+                            <option value="lecturer">محاضر (Lecturer)</option>
+                            <option value="admin">إدارة (Admin)</option>
+                        </select>
+                        <i class="fas fa-user-tag input-icon"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">اسم المستخدم أو الرقم الأكاديمي</label>
+                    <div class="input-icon-wrapper">
+                        <input type="text" class="form-control-pro" id="username" placeholder="مثال: std2026..."
+                            required autocomplete="username">
+                        <i class="fas fa-user input-icon"></i>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 30px;">
+                    <label class="form-label">كلمة المرور</label>
+                    <div class="input-icon-wrapper">
+                        <input type="password" class="form-control-pro" id="password" placeholder="••••••••" required
+                            autocomplete="current-password">
+                        <i class="fas fa-lock input-icon"></i>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit-pro" id="submitBtn">
+                    <span>تسجيل الدخول للنظام</span>
+                    <i class="fas fa-sign-in-alt"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- استيراد ملف الـ API -->
+    <script src="../frontend/js/api.js?v=2"></script>
+    <script>
+        
+        localStorage.removeItem('token');
+        localStorage.removeItem('userRole');
+        localStorage.removeItem('userId');
+
+        function showError(msg) {
+            const alertBox = document.getElementById('alertBox');
+            document.getElementById('alertMessage').textContent = msg;
+            alertBox.classList.add('show');
+            setTimeout(() => {
+                alertBox.classList.remove('show');
+            }, 4000);
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const originalText = btn.innerHTML;
+
+            
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>جاري المصادقة...</span>';
+            btn.disabled = true;
+            btn.style.opacity = '0.8';
+
+            const un = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value.trim();
+            const r = document.getElementById('role').value;
+
+            try {
+                
+                
+                const res = await AuthAPI.login(un, pass, r);
+
+                if (res && res.success) {
+                    
+                    localStorage.setItem('token', res.data.token);
+                    localStorage.setItem('userRole', r);
+                    localStorage.setItem('userType', res.data.userType);
+                    localStorage.setItem('userId', res.data.userId);
+                    localStorage.setItem('firstName', res.data.firstName);
+                    localStorage.setItem('fullName', res.data.fullName);
+
+                    
+                    btn.innerHTML = '<i class="fas fa-check-circle"></i> <span>تم الدخول بنجاح!</span>';
+                    btn.style.background = 'linear-gradient(135deg, #10B981 0%, #059669 100%)';
+
+                    setTimeout(() => {
+                        if (r === 'admin') window.location.href = 'pages/dashboard.html';
+                        else if (r === 'lecturer') window.location.href = 'pages/lecturer-dashboard.html';
+                        else window.location.href = 'pages/student-dashboard.html';
+                    }, 800);
+                } else {
+                    
+                    const errorMsg = (res && res.data && res.data.message) ? res.data.message : 'بيانات الدخول غير صحيحة';
+                    showError(errorMsg);
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                }
+            } catch (err) {
+                console.error("Login Form Error:", err);
+                showError('لا يمكن الوصول للخادم، تأكد من تشغيل الباك-إند (Program.cs)');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                btn.style.opacity = '1';
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام تقييم المحاضرين - تقييم المحاضرين</title>
+    <!-- خطوط جوجل (Cairo) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- تأثيرات حركية للخلفية بالشكل العصري -->
+    <div
+        style="position: fixed; top:0; left:0; width:100%; height:100%; overflow:hidden; z-index: -1; pointer-events:none;">
+        <div
+            style="position:absolute; width: 600px; height: 600px; background: rgba(79, 70, 229, 0.05); border-radius: 50%; filter: blur(80px); top: -200px; right: -100px; animation: pulse-subtle 8s infinite alternate;">
+        </div>
+        <div
+            style="position:absolute; width: 500px; height: 500px; background: rgba(14, 165, 233, 0.05); border-radius: 50%; filter: blur(80px); bottom: -100px; left: -100px; animation: pulse-subtle 10s infinite alternate-reverse;">
+        </div>
+    </div>
+
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()"><i class="fas fa-bars"></i></button>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileMenu()"></div>
+    <div class="app-container">
+        <!-- القائمة الجانبية המحدثة -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-graduation-cap"></i>
+                <h1>نظام التقييم</h1>
+                <p>بوابة الطالب</p>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="student-dashboard.html" class="nav-link">
+                        <i class="fas fa-home"></i><span>الرئيسية</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="evaluate.html" class="nav-link active">
+                        <i class="fas fa-star"></i><span>تقييم المحاضرين</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="view-ratings.html" class="nav-link">
+                        <i class="fas fa-eye"></i><span>عرض التقييمات العامة</span>
+                    </a>
+                </li>
+                <li class="nav-item" style="margin-top: auto;">
+                    <a href="#" class="nav-link logout-btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i><span>تسجيل الخروج</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- المحتوى الرئيسي -->
+        <main class="main-content">
+            <!-- الهيدر العلوي -->
+            <div class="page-header">
+                <div>
+                    <h2 class="page-title">
+                        <i class="fas fa-edit" style="color: var(--primary); font-size: 1.8rem;"></i>
+                        نموذج التقييم السري
+                    </h2>
+                    <p style="color: var(--text-muted); margin-top: 5px;">أدلي برأيك بكل شفافية وموضوعية</p>
+                </div>
+
+                <div class="user-profile-badge">
+                    <div class="user-avatar" id="userAvatarInitials">ط</div>
+                    <div style="display: flex; flex-direction: column;">
+                        <span style="font-weight: 700; font-size: 0.95rem;" id="headerStudentName">طالب</span>
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">طالب مسجل</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="position: relative; overflow: hidden;">
+                <!-- شريط زخرفي علوي للبطاقة -->
+                <div
+                    style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--gradient-primary);">
+                </div>
+
+                <div class="card-header">
+                    <h3 class="card-title">إجراء تقييم جديد</h3>
+                </div>
+
+                <form id="evaluationForm">
+                    <div class="form-group"
+                        style="background: rgba(15, 23, 42, 0.02); padding: 20px; border-radius: var(--radius-lg); border: 1px dashed var(--border-color);">
+                        <label class="form-label"
+                            style="font-size: 1.1rem; color: var(--primary); margin-bottom: 12px;">
+                            <i class="fas fa-chalkboard-teacher ml-2"></i> 1. اختر المحاضر للتقييم
+                        </label>
+                        <select class="form-control" id="lecturerSelect" required
+                            style="font-size: 1.05rem; box-shadow: var(--shadow-sm);">
+                            <option value="" disabled selected>-- جاري تحميل قائمة المحاضرين... --</option>
+                        </select>
+                    </div>
+
+                    <div id="lecturerInfo"
+                        style="display: none; background: linear-gradient(135deg, rgba(14, 165, 233, 0.05) 0%, rgba(79, 70, 229, 0.05) 100%); padding: 20px; border-radius: var(--radius-lg); margin-bottom: 25px; border-right: 4px solid var(--primary); animation: slideUpFade 0.4s ease-out;">
+                        <h4 style="margin: 0; font-size: 1.2rem; display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-user-circle" style="color: var(--primary); font-size: 1.5rem;"></i>
+                            المحاضر المحدد: <span id="lecturerName" class="text-gradient"
+                                style="font-weight: 800;"></span>
+                        </h4>
+                        <input type="hidden" id="lecturerId">
+                        <input type="hidden" id="subjectId">
+                    </div>
+
+                    <div id="questionsContainer" style="display: none; margin-top: 30px;">
+                        <!-- الأسئلة ستظهر هنا عبر الجافاسكريبت -->
+                    </div>
+
+                    <button type="submit" id="submitBtn" class="btn btn-primary"
+                        style="width: 100%; margin-top: 30px; display: none; padding: 16px; font-size: 1.1rem; justify-content: center;">
+                        <span>إرسال التقييم واعتماده</span>
+                        <i class="fas fa-paper-plane"
+                            style="margin-right: 10px; animation: pulse-subtle 2s infinite;"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- أداة التنبيهات المنبثقة السفلية -->
+        </main>
+    </div>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/shared.js"></script>
+    <script>
+        checkAuth();
+
+        
+        const fullName = localStorage.getItem('fullName');
+        if (fullName) {
+            document.getElementById('headerStudentName').textContent = fullName.split(' ')[0] + ' ' + (fullName.split(' ')[1] || '');
+            document.getElementById('userAvatarInitials').textContent = fullName.substring(0, 1);
+        }
+
+        const studentId = localStorage.getItem('userId');
+        let questions = [];
+        let studentSubjects = [];
+        let isEvaluationOpen = true;
+
+        async function loadData() {
+            
+            const statusRes = await apiCall('/settings/IsEvaluationOpen', 'GET');
+
+            const lecturerSelect = document.getElementById('lecturerSelect');
+
+            if (statusRes.success && !statusRes.data.isOpen) {
+                isEvaluationOpen = false;
+                lecturerSelect.innerHTML = '<option value="">التقييم مغلق حالياً</option>';
+                lecturerSelect.disabled = true;
+                document.getElementById('questionsContainer').innerHTML = `
+                    <div style="text-align: center; padding: 50px 20px; background: rgba(239, 68, 68, 0.05); border-radius: var(--radius-lg); border: 1px dashed rgba(239, 68, 68, 0.3);">
+                        <i class="fas fa-lock" style="font-size: 60px; margin-bottom: 20px; color: var(--danger); opacity: 0.8;"></i>
+                        <h3 style="color: var(--danger); margin-bottom: 10px;">عفواً، التقييم مغلق حالياً</h3>
+                        <p style="color: var(--text-muted); font-size: 1.1rem;">يرجى المحاولة لاحقاً عند فتح فترة التقييم من قبل إدارة الكلية</p>
+                    </div>
+                `;
+                document.getElementById('questionsContainer').style.display = 'block';
+                document.getElementById('submitBtn').style.display = 'none';
+                return;
+            }
+
+            
+            const questionsResult = await QuestionsAPI.getAll();
+            if (questionsResult.success) {
+                questions = questionsResult.data;
+            }
+
+            
+            const mySubjects = await apiCall(`/studentsubjects/GetByStudent/${studentId}`);
+
+            if (mySubjects.success && mySubjects.data.length > 0) {
+                studentSubjects = mySubjects.data;
+
+                
+                const validSubjects = studentSubjects.filter(ss => ss.lecturerId != null);
+
+                if (validSubjects.length === 0) {
+                    lecturerSelect.innerHTML = '<option value="" disabled selected>لا يوجد محاضرين مسجلين لك - تواصل مع الإدارة</option>';
+                    lecturerSelect.disabled = true;
+                } else {
+                    lecturerSelect.innerHTML = '<option value="" disabled selected>-- اختر من القائمة --</option>';
+                    validSubjects.forEach(ss => {
+                        const lecturerName = (ss.lecturer?.firstName || '') + ' ' + (ss.lecturer?.lastName || '');
+                        const subjectName = ss.subject?.subjectName || '';
+                        lecturerSelect.innerHTML += `<option value="${ss.lecturerId}" data-subject="${ss.subjectId}">د. ${lecturerName} - ${subjectName}</option>`;
+                    });
+                }
+            } else {
+                lecturerSelect.innerHTML = '<option value="" disabled selected>لا توجد مواد مسجلة لك حالياً</option>';
+                lecturerSelect.disabled = true;
+            }
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('questionsContainer');
+            if (questions.length === 0) {
+                container.innerHTML = `
+                <div style="text-align: center; padding: 40px; background: rgba(59, 130, 246, 0.05); border-radius: var(--radius-lg);">
+                    <i class="fas fa-folder-open" style="font-size: 50px; color: var(--info); opacity: 0.5; margin-bottom: 15px;"></i>
+                    <p style="color: var(--text-muted); font-size: 1.1rem;">لا توجد أسئلة للتقييم حالياً، يرجى التواصل مع الإدارة</p>
+                </div>`;
+                return;
+            }
+
+            container.innerHTML = `
+                <div style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-tasks text-primary"></i>
+                    <h3 style="margin: 0; color: var(--text-main);">2. أسئلة التقييم</h3>
+                </div>
+            ` + questions.map((q, i) => `
+                <div class="card" style="margin-top: 15px; padding: 25px; border-right: 3px solid var(--secondary); background: white; animation: slideUpFade 0.4s ease-out backwards;" style="animation-delay: ${hasAnimationDelay(i)}">
+                    <p style="margin-bottom: 15px; font-weight: 700; font-size: 1.1rem; color: var(--text-main);">
+                        <span style="background: var(--gradient-primary); color: white; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 0.9rem; margin-left: 8px;">${i + 1}</span>
+                        ${q.questionText}
+                    </p>
+                    <textarea name="answer_${q.questionId}" class="form-control" 
+                        placeholder="اكتب تعليقك ورأيك الإيجابي أو السلبي بكل موضوعية... (400 حرف كحد أقصى)" 
+                        maxlength="400" rows="3" style="resize: vertical; background: var(--bg-main); border: 2px solid var(--border-color);"></textarea>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+                        <small style="color: var(--primary); font-weight: 600; display: none;" class="typing-indicator-${q.questionId}">جاري الكتابة...</small>
+                        <small style="color: var(--text-muted); font-weight: 500; margin-right: auto;">
+                            <span class="char-count-${q.questionId}">0</span>/400
+                        </small>
+                    </div>
+                </div>
+            `).join('');
+
+            
+            function hasAnimationDelay(i) {
+                return (i * 0.1) + 's';
+            }
+
+            
+            questions.forEach(q => {
+                const textarea = document.querySelector(`textarea[name="answer_${q.questionId}"]`);
+                const indicator = document.querySelector(`.typing-indicator-${q.questionId}`);
+
+                textarea.addEventListener('input', function () {
+                    const length = this.value.length;
+                    const countSpan = document.querySelector(`.char-count-${q.questionId}`);
+                    countSpan.textContent = length;
+
+                    
+                    if (length > 350) countSpan.style.color = 'var(--danger)';
+                    else countSpan.style.color = 'var(--text-muted)';
+                });
+
+                textarea.addEventListener('focus', function () {
+                    this.parentElement.style.boxShadow = 'var(--shadow-lg)';
+                    this.parentElement.style.transform = 'translateY(-2px)';
+                });
+
+                textarea.addEventListener('blur', function () {
+                    this.parentElement.style.boxShadow = 'var(--shadow-md)';
+                    this.parentElement.style.transform = 'translateY(0)';
+                });
+            });
+        }
+
+        
+        document.getElementById('lecturerSelect').addEventListener('change', function () {
+            const lecturerId = this.value;
+            const container = document.getElementById('questionsContainer');
+            const submitBtn = document.getElementById('submitBtn');
+            const lecturerInfo = document.getElementById('lecturerInfo');
+
+            if (!lecturerId) {
+                container.style.display = 'none';
+                submitBtn.style.display = 'none';
+                lecturerInfo.style.display = 'none';
+                return;
+            }
+
+            
+            const selectedOption = this.options[this.selectedIndex];
+            const subjectId = selectedOption.dataset.subject;
+            const lecturerName = selectedOption.textContent;
+
+            document.getElementById('lecturerName').textContent = lecturerName;
+            document.getElementById('lecturerId').value = lecturerId;
+            document.getElementById('subjectId').value = subjectId;
+
+            lecturerInfo.style.display = 'block';
+
+            
+            renderQuestions();
+            container.style.display = 'block';
+            submitBtn.style.display = 'flex';
+
+            
+            setTimeout(() => {
+                lecturerInfo.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        });
+
+        document.getElementById('evaluationForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const lecturerId = document.getElementById('lecturerId').value;
+            const subjectId = document.getElementById('subjectId').value;
+            const submitBtn = document.getElementById('submitBtn');
+
+            if (!lecturerId || !subjectId) {
+                showFancyAlert('خطأ', 'حدث خطأ في تحديد المحاضر. الرجاء إعادة الاختيار.', 'danger');
+                return;
+            }
+
+            
+            const originalBtnContent = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-left:10px;"></i> جاري اعتماد التقييم...';
+            submitBtn.disabled = true;
+
+            let hasAnswer = false;
+            let errorCount = 0;
+            let successCount = 0;
+
+            try {
+                let promises = [];
+                for (const q of questions) {
+                    const answer = document.querySelector(`textarea[name="answer_${q.questionId}"]`).value.trim();
+                    if (answer.length > 0) {
+                        hasAnswer = true;
+                        const payload = {
+                            textAnswer: answer,
+                            studentId: parseInt(studentId),
+                            questionId: q.questionId,
+                            lecturerId: parseInt(lecturerId),
+                            subjectId: parseInt(subjectId)
+                        };
+                        promises.push(EvaluationsAPI.add(payload));
+                    }
+                }
+                
+                const results = await Promise.all(promises);
+                results.forEach(res => {
+                    if (res && res.success) {
+                        successCount++;
+                    } else {
+                        errorCount++;
+                    }
+                });
+
+                if (!hasAnswer) {
+                    showFancyAlert('تنبيه', 'الرجاء الإجابة على سؤال واحد على الأقل قبل الإرسال', 'error');
+                    submitBtn.innerHTML = originalBtnContent;
+                    submitBtn.disabled = false;
+                    return;
+                }
+
+                if (errorCount === 0) {
+                    
+                    showFancyAlert('تم بنجاح', 'تم إرسال تقييمك السري بنجاح! شكراً لمساهمتك.');
+
+                    
+                    document.getElementById('questionsContainer').style.opacity = '0.5';
+
+                    setTimeout(() => {
+                        resetForm();
+                    }, 1500);
+
+                } else if (successCount === 0) {
+                    
+                    showFancyAlert('عذراً', 'لقد قمت بتقييم هذا المحاضر في هذه المادة مسبقاً! لا يمكن التقييم مرة أخرى.', 'danger');
+                    submitBtn.innerHTML = originalBtnContent;
+                    submitBtn.disabled = false;
+                } else {
+                    
+                    showFancyAlert('تم بنجاح جزئي', 'تم حفظ إجاباتك الجديدة. (بعض الأسئلة الأخرى تم إجابتها مسبقاً)', 'info');
+                    setTimeout(() => resetForm(), 1500);
+                }
+            } catch (err) {
+                console.error("Evaluation submission error:", err);
+                showFancyAlert('خطأ اتصال', 'حدث خطأ في الاتصال بالخادم، يرجى المحاولة مرة أخرى', 'danger');
+                submitBtn.innerHTML = originalBtnContent;
+                submitBtn.disabled = false;
+            }
+        });
+
+        function resetForm() {
+            const lecturerSelect = document.getElementById('lecturerSelect');
+            lecturerSelect.value = '';
+            
+            document.querySelectorAll('#questionsContainer textarea').forEach(txt => txt.value = '');
+            document.querySelectorAll('[class^="char-count-"]').forEach(span => span.textContent = '0');
+            document.querySelectorAll('[class^="typing-indicator-"]').forEach(ind => ind.style.display = 'none');
+
+            
+            document.getElementById('questionsContainer').style.display = 'none';
+            document.getElementById('questionsContainer').style.opacity = '1';
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('lecturerInfo').style.display = 'none';
+
+            
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.innerHTML = '<span>إرسال التقييم واعتماده</span><i class="fas fa-paper-plane" style="margin-right: 10px; animation: pulse-subtle 2s infinite;"></i>';
+            submitBtn.disabled = false;
+
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        
+        loadData();
+    </script>
+</body>
+
+</html>

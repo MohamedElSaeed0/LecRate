@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36915.13 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LecRate", "LecRate.csproj", "{C917C70E-3AF5-4CE0-B381-8E07BA233255}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C917C70E-3AF5-4CE0-B381-8E07BA233255}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C917C70E-3AF5-4CE0-B381-8E07BA233255}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C917C70E-3AF5-4CE0-B381-8E07BA233255}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C917C70E-3AF5-4CE0-B381-8E07BA233255}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D4048015-D6F0-43F2-ADA3-2E40F526E947}
+	EndGlobalSection
+EndGlobal

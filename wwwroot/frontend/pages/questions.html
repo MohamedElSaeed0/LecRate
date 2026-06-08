@@ -1,0 +1,359 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام تقييم المحاضرين - إدارة أسئلة التقييم</title>
+    <!-- خطوط جوجل (Cairo) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .premium-stats-badge {
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.1) 0%, rgba(14, 165, 233, 0.1) 100%);
+            color: var(--primary);
+            border: 1px solid rgba(79, 70, 229, 0.2);
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: var(--shadow-sm);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- تأثيرات حركية للخلفية -->
+    <div
+        style="position: fixed; top:0; left:0; width:100%; height:100%; overflow:hidden; z-index: -1; pointer-events:none;">
+        <div
+            style="position:absolute; width: 600px; height: 600px; background: rgba(79, 70, 229, 0.05); border-radius: 50%; filter: blur(80px); top: -200px; right: -100px; animation: pulse-subtle 8s infinite alternate;">
+        </div>
+        <div
+            style="position:absolute; width: 500px; height: 500px; background: rgba(14, 165, 233, 0.05); border-radius: 50%; filter: blur(80px); bottom: -100px; left: -100px; animation: pulse-subtle 10s infinite alternate-reverse;">
+        </div>
+    </div>
+
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()"><i class="fas fa-bars"></i></button>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileMenu()"></div>
+    <div class="app-container">
+        <!-- القائمة الجانبية المحدثة -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div
+                    style="background: var(--gradient-primary); width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; box-shadow: var(--shadow-md);">
+                    <i class="fas fa-shield-alt" style="color: white; font-size: 1.5rem;"></i>
+                </div>
+                <h1 style="font-size: 1.2rem; margin: 0;">لوحة الإدارة</h1>
+                <p>نظام التقييم الشامل</p>
+            </div>
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link">
+                        <i class="fas fa-home"></i>
+                        <span>الرئيسية</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="students.html" class="nav-link">
+                        <i class="fas fa-user-graduate"></i>
+                        <span>إدارة الطلاب</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="lecturers.html" class="nav-link">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <span>إدارة المحاضرين</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="subjects.html" class="nav-link">
+                        <i class="fas fa-book"></i>
+                        <span>إدارة المواد الدراسية</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="questions.html" class="nav-link active">
+                        <i class="fas fa-question-circle"></i>
+                        <span>إدارة الأسئلة للاستبيان</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="reports.html" class="nav-link">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>التقارير والإحصائيات</span>
+                    </a>
+                </li>
+                <li class="nav-item" style="margin-top: auto;">
+                    <a href="#" class="nav-link logout-btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>تسجيل الخروج</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- المحتوى الرئيسي -->
+        <main class="main-content">
+            <div class="page-header" style="animation: slideInRight 0.5s ease-out;">
+                <div>
+                    <h2 class="page-title">
+                        <i class="fas fa-question-circle" style="color: var(--primary); font-size: 1.8rem;"></i>
+                        إدارة أسئلة التقييم
+                    </h2>
+                    <p style="color: var(--text-muted); margin-top: 5px;">إضافة وضبط الأسئلة التي تظهر للطلاب في استبيان
+                        التقييم</p>
+                </div>
+
+                <div class="user-profile-badge">
+                    <div class="user-avatar" id="userAvatarInitials" style="background: var(--gradient-secondary);">إ
+                    </div>
+                    <div style="display: flex; flex-direction: column;">
+                        <span style="font-weight: 700; font-size: 0.95rem;" id="headerAdminName">الإدارة العليا</span>
+                        <span style="font-size: 0.8rem; color: var(--success);"><i class="fas fa-circle"
+                                style="font-size: 0.5rem; margin-left: 3px;"></i>متصل</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Header Content Box with actions -->
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; animation: slideUpFade 0.6s ease-out forwards;">
+                <button class="btn"
+                    style="background: var(--gradient-primary); color: white; padding: 12px 25px; border-radius: 30px;"
+                    onclick="openModal()">
+                    <i class="fas fa-plus-circle"></i> إضافة سؤال جديد للاستبيان
+                </button>
+
+                <div class="premium-stats-badge">
+                    <i class="fas fa-list-ol"></i>
+                    <span id="questionCount">جاري الحساب...</span>
+                </div>
+            </div>
+
+            <div class="card"
+                style="border-top: 4px solid var(--primary); animation: slideUpFade 0.7s ease-out forwards;">
+                <div class="table-container">
+                    <table style="width: 100%; border-collapse: separate; border-spacing: 0 8px;">
+                        <thead>
+                            <tr style="background: rgba(15, 23, 42, 0.03);">
+                                <th
+                                    style="padding: 15px; border-radius: 0 8px 8px 0; color: var(--text-main); width: 8%;">
+                                    #</th>
+                                <th style="padding: 15px; color: var(--text-main); width: 67%;">نص السؤال في الاستبيان
+                                </th>
+                                <th
+                                    style="padding: 15px; border-radius: 8px 0 0 8px; color: var(--text-main); text-align: center; width: 25%;">
+                                    الإجراءات والتعديلات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="questionsTable">
+                            <tr>
+                                <td colspan="3" style="text-align: center; padding: 40px;">
+                                    <i class="fas fa-spinner fa-spin"
+                                        style="font-size: 2rem; color: var(--primary); margin-bottom: 15px;"></i>
+                                    <p style="color: var(--text-muted); font-weight: 600;">جاري تحميل البيانات...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- نافذة إضافة سؤال -->
+    <div class="modal-overlay" id="questionModal">
+        <div class="modal" style="border-radius: var(--radius-lg); box-shadow: var(--shadow-xl); max-width: 500px;">
+            <div class="modal-header">
+                <h3 id="modalTitle" style="color: var(--text-main); font-weight: 800;"><i
+                        class="fas fa-comment-dots text-primary" style="margin-left: 10px;"></i> إضافة سؤال جديد</h3>
+                <button class="modal-close" onclick="closeModal()" style="color: var(--danger);"><i
+                        class="fas fa-times-circle"></i></button>
+            </div>
+            <form id="questionForm" style="padding: 10px;">
+                <input type="hidden" id="questionId">
+                <div class="form-group">
+                    <label class="form-label">نص السؤال الموجه للطالب</label>
+                    <div style="position: relative;">
+                        <textarea class="form-control" id="questionText" rows="4" required
+                            style="padding: 15px; resize: vertical; border-radius: var(--radius-md);"
+                            placeholder="اكتب السؤال بوضوح هنا، مثال: كيف تقيم أداء المحاضر في شرح المفاهيم المعقدة؟"></textarea>
+                    </div>
+                </div>
+
+                <div style="margin-top: 25px;">
+                    <button type="submit" class="btn"
+                        style="background: var(--gradient-primary); color: white; width: 100%; justify-content: center; padding: 12px; font-size: 1.1rem; border-radius: 30px;">
+                        <i class="fas fa-save"></i> حفظ السؤال في بنك الأسئلة
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- نافذة التأكيد العصرية -->
+
+    <!-- حاوية التنبيهات -->
+
+    <script src="../js/api.js?v=2"></script>
+    <script src="../js/shared.js"></script>
+    <script>
+        checkAuth();
+
+        
+        const fullName = localStorage.getItem('fullName');
+        const firstName = localStorage.getItem('firstName');
+        if (fullName && fullName !== 'null' && fullName !== 'undefined') {
+            document.getElementById('headerAdminName').textContent = fullName;
+            const initials = fullName.substring(0, 1) + (fullName.indexOf(' ') > 0 ? fullName.substring(fullName.indexOf(' ') + 1, fullName.indexOf(' ') + 2) : '');
+            document.getElementById('userAvatarInitials').textContent = initials;
+        } else if (firstName && firstName !== 'null' && firstName !== 'undefined') {
+            document.getElementById('headerAdminName').textContent = firstName;
+            document.getElementById('userAvatarInitials').textContent = firstName.substring(0, 1);
+        }
+
+
+        let allQuestions = [];
+
+        async function loadQuestions() {
+            try {
+                const result = await QuestionsAPI.getAll();
+                const tbody = document.getElementById('questionsTable');
+
+                if (!result.success || result.data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 40px; color: var(--text-muted);"><i class="fas fa-file-alt" style="font-size: 3rem; margin-bottom: 15px; display: block; opacity: 0.5;"></i><p style="font-weight: 600;">لا توجد أسئلة مسجلة حالياً</p></td></tr>';
+                    document.getElementById('questionCount').textContent = 'لا يوجد أسئلة';
+                    return;
+                }
+
+                allQuestions = result.data;
+
+                tbody.innerHTML = result.data.map((q, i) => `
+                    <tr style="background: white; transform: translateY(0); box-shadow: 0 1px 3px rgba(0,0,0,0.02); transition: all 0.2s;">
+                        <td style="font-weight: bold; color: var(--text-muted); border-radius: 0 8px 8px 0;">${i + 1}</td>
+                        <td style="padding-right: 20px;">
+                            <div style="font-weight: 600; color: var(--text-main); font-size: 1.05rem; line-height: 1.6; border-right: 3px solid var(--primary); padding-right: 12px;">${q.questionText}</div>
+                        </td>
+                        <td style="text-align: center; border-radius: 8px 0 0 8px;">
+                            <button class="btn btn-sm" style="background: rgba(14, 165, 233, 0.1); color: var(--info); padding: 8px 12px; border-radius: 6px; font-weight: 600;" onclick="editQuestion(${q.questionId})" title="تعديل السؤال">
+                                <i class="fas fa-edit"></i> تعديل
+                            </button>
+                            <button class="btn btn-sm" style="background: rgba(239, 68, 68, 0.1); color: var(--danger); padding: 8px 12px; border-radius: 6px; font-weight: 600; margin-right: 5px;" onclick="deleteQuestion(${q.questionId})" title="حذف السؤال">
+                                <i class="fas fa-trash-alt"></i> حذف
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                
+                document.getElementById('questionCount').textContent = `إجمالي عدد الأسئلة: ${result.data.length} سؤال`;
+            } catch(e) {
+                console.error("Error loading questions:", e);
+                const tbody = document.getElementById('questionsTable');
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 40px; color: var(--danger);"><i class="fas fa-exclamation-circle" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i> حدث خطأ أثناء جلب البيانات</td></tr>';
+            }
+        }
+
+        function openModal() {
+            document.getElementById('questionModal').classList.add('active');
+            document.getElementById('questionForm').reset();
+            document.getElementById('questionId').value = '';
+            document.getElementById('modalTitle').innerHTML = '<i class="fas fa-comment-dots text-primary" style="margin-left: 10px;"></i> إضافة سؤال جديد';
+        }
+
+        function closeModal() {
+            document.getElementById('questionModal').classList.remove('active');
+        }
+
+        function editQuestion(id) {
+            const question = allQuestions.find(q => q.questionId === id);
+            if (question) {
+                document.getElementById('questionId').value = question.questionId;
+                document.getElementById('questionText').value = question.questionText;
+                document.getElementById('modalTitle').innerHTML = '<i class="fas fa-edit text-info" style="margin-left: 10px;"></i> تعديل صياغة السؤال';
+                document.getElementById('questionModal').classList.add('active');
+            }
+        }
+
+        async function deleteQuestion(id) {
+            const confirmed = await showConfirm('هل أنت متأكد من حذف هذا السؤال؟ إزالته قد تؤثر على عرض التقييمات السابقة.');
+            if (confirmed) {
+                try {
+                    const result = await QuestionsAPI.delete(id);
+                    if(result && result.success) {
+                        showFancyAlert('تم الحذف', 'تم إزالة السؤال من البنك بنجاح', 'success');
+                        loadQuestions();
+                    } else {
+                        showFancyAlert('تعذر الحذف', 'رُبما يكون السؤال مرتبطاً بتقييمات مُسجلة لا يمكن التخلص منها', 'danger');
+                    }
+                } catch(e) {
+                    showFancyAlert('خطأ', 'تعذر الاتصال بالخادم', 'danger');
+                }
+            }
+        }
+
+        document.getElementById('questionForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalBtnHtml = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-left: 5px;"></i> جاري المعالجة...';
+            submitBtn.disabled = true;
+
+            const id = document.getElementById('questionId').value;
+            const text = document.getElementById('questionText').value.trim();
+
+            if(!text) {
+                showFancyAlert('تنبيه', 'يجب إدخال نص السؤال', 'danger');
+                submitBtn.innerHTML = originalBtnHtml;
+                submitBtn.disabled = false;
+                return;
+            }
+
+            try {
+                let result;
+                if (id) {
+                    result = await QuestionsAPI.update(id, { 
+                        questionText: text, 
+                        adminId: parseInt(localStorage.getItem('userId')) || 1, 
+                        questionId: parseInt(id) 
+                    });
+                } else {
+                    result = await QuestionsAPI.add({ 
+                        questionText: text, 
+                        adminId: parseInt(localStorage.getItem('userId')) || 1 
+                    });
+                }
+
+                if (result && result.success) {
+                    showFancyAlert('نجاح الإجراء', id ? 'تم تعديل صياغة السؤال بنجاح' : 'تم إضافة وإدراج السؤال بنجاح', 'success');
+                    closeModal();
+                    loadQuestions();
+                } else {
+                    showFancyAlert('أمر لم يكتمل', result?.data?.message || 'حدث خطأ أثناء المحاولة', 'danger');
+                }
+            } catch(e) {
+                showFancyAlert('خطأ اتصال', 'تأكد من استقرار شبكة الإنترنت لديك', 'danger');
+            } finally {
+                submitBtn.innerHTML = originalBtnHtml;
+                submitBtn.disabled = false;
+            }
+        });
+
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            loadQuestions();
+        });
+    </script>
+</body>
+
+</html>
+
+
+

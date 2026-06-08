@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام تقييم المحاضرين - إدارة الطلاب</title>
+    <!-- خطوط جوجل (Cairo) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Tabs Styles (Modernized) */
+        .tabs-container {
+            margin-bottom: 25px;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius-lg);
+            padding: 10px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 24px;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            transition: var(--transition-bounce);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .tab-btn:hover {
+            background: rgba(79, 70, 229, 0.05);
+            color: var(--primary);
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+        }
+
+        .tab-content {
+            display: none;
+            animation: slideUpFade 0.4s ease-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .premium-pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .premium-pagination .btn {
+            border-radius: 20px;
+            padding: 8px 20px;
+        }
+
+        .premium-stats-badge {
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.1) 0%, rgba(14, 165, 233, 0.1) 100%);
+            color: var(--primary);
+            border: 1px solid rgba(79, 70, 229, 0.2);
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- تأثيرات حركية للخلفية -->
+    <div
+        style="position: fixed; top:0; left:0; width:100%; height:100%; overflow:hidden; z-index: -1; pointer-events:none;">
+        <div
+            style="position:absolute; width: 600px; height: 600px; background: rgba(79, 70, 229, 0.05); border-radius: 50%; filter: blur(80px); top: -200px; right: -100px; animation: pulse-subtle 8s infinite alternate;">
+        </div>
+        <div
+            style="position:absolute; width: 500px; height: 500px; background: rgba(14, 165, 233, 0.05); border-radius: 50%; filter: blur(80px); bottom: -100px; left: -100px; animation: pulse-subtle 10s infinite alternate-reverse;">
+        </div>
+    </div>
+
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()"><i class="fas fa-bars"></i></button>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileMenu()"></div>
+    <div class="app-container">
+        <!-- القائمة الجانبية المحدثة -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div
+                    style="background: var(--gradient-primary); width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; box-shadow: var(--shadow-md);">
+                    <i class="fas fa-shield-alt" style="color: white; font-size: 1.5rem;"></i>
+                </div>
+                <h1 style="font-size: 1.2rem; margin: 0;">لوحة الإدارة</h1>
+                <p>نظام التقييم الشامل</p>
+            </div>
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link">
+                        <i class="fas fa-home"></i>
+                        <span>الرئيسية</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="students.html" class="nav-link active">
+                        <i class="fas fa-user-graduate"></i>
+                        <span>إدارة الطلاب</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="lecturers.html" class="nav-link">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <span>إدارة المحاضرين</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="subjects.html" class="nav-link">
+                        <i class="fas fa-book"></i>
+                        <span>إدارة المواد</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="questions.html" class="nav-link">
+                        <i class="fas fa-question-circle"></i>
+                        <span>إدارة الأسئلة</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="reports.html" class="nav-link">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>التقارير والإحصائيات</span>
+                    </a>
+                </li>
+                <li class="nav-item" style="margin-top: auto;">
+                    <a href="#" class="nav-link logout-btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>تسجيل الخروج</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- المحتوى الرئيسي -->
+        <main class="main-content">
+            <div class="page-header" style="animation: slideInRight 0.5s ease-out;">
+                <div>
+                    <h2 class="page-title">
+                        <i class="fas fa-users-cog" style="color: var(--primary); font-size: 1.8rem;"></i>
+                        إدارة الطلاب
+                    </h2>
+                    <p style="color: var(--text-muted); margin-top: 5px;">إضافة، تعديل، وربط الطلاب بالمواد الدراسية</p>
+                </div>
+
+                <div class="user-profile-badge">
+                    <div class="user-avatar" id="userAvatarInitials" style="background: var(--gradient-secondary);">إ
+                    </div>
+                    <div style="display: flex; flex-direction: column;">
+                        <span style="font-weight: 700; font-size: 0.95rem;" id="headerAdminName">الإدارة العليا</span>
+                        <span style="font-size: 0.8rem; color: var(--success);"><i class="fas fa-circle"
+                                style="font-size: 0.5rem; margin-left: 3px;"></i>متصل</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs-container" style="animation: slideUpFade 0.6s ease-out forwards;">
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('students')">
+                        <i class="fas fa-list-ul"></i> قائمة الطلاب
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('assign')">
+                        <i class="fas fa-link"></i> ربط الطلاب بالمواد
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab 1: Students List -->
+            <div id="tab-students" class="tab-content active">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <button class="btn" style="background: var(--gradient-primary); color: white;"
+                        onclick="openModal()">
+                        <i class="fas fa-plus-circle"></i> إضافة طالب جديد
+                    </button>
+
+                    <div class="premium-stats-badge">
+                        <i class="fas fa-chart-pie"></i>
+                        <span id="studentCount">جاري الحساب...</span>
+                    </div>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="card" style="margin-bottom: 25px; padding: 15px;">
+                    <div class="form-group" style="margin: 0; position: relative;">
+                        <i class="fas fa-search"
+                            style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                        <input type="text" id="searchInput" class="form-control"
+                            style="padding-right: 45px; border-radius: 30px;"
+                            placeholder="ابحث باسم الطالب، اسم المستخدم..." oninput="searchStudents()">
+                    </div>
+                </div>
+
+                <!-- Students Table -->
+                <div class="card" style="border-top: 4px solid var(--primary);">
+                    <div class="table-container">
+                        <table style="width: 100%; border-collapse: separate; border-spacing: 0 8px;">
+                            <thead>
+                                <tr style="background: rgba(15, 23, 42, 0.03);">
+                                    <th style="padding: 15px; border-radius: 0 8px 8px 0; color: var(--text-main);">#
+                                    </th>
+                                    <th style="padding: 15px; color: var(--text-main);">الاسم الأول</th>
+                                    <th style="padding: 15px; color: var(--text-main);">الاسم الأخير</th>
+                                    <th style="padding: 15px; color: var(--text-main);">اسم المستخدم</th>
+                                    <th
+                                        style="padding: 15px; border-radius: 8px 0 0 8px; color: var(--text-main); text-align: center;">
+                                        الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentsTable">
+                                <tr>
+                                    <td colspan="5" style="text-align: center; padding: 40px;">
+                                        <i class="fas fa-spinner fa-spin"
+                                            style="font-size: 2rem; color: var(--primary); margin-bottom: 15px;"></i>
+                                        <p style="color: var(--text-muted); font-weight: 600;">جاري تحميل البيانات...
+                                        </p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Pagination Controls -->
+                    <div id="pagination" class="premium-pagination"></div>
+                </div>
+            </div>
+
+            <!-- Tab 2: Assign Students to Subjects -->
+            <div id="tab-assign" class="tab-content">
+                <div class="card" style="border-top: 4px solid var(--secondary);">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-plug text-primary" style="margin-left: 8px;"></i> تسجيل
+                            طالب في مادة مع المحاضر</h3>
+                    </div>
+                    <form id="assignForm" style="padding: 10px;">
+                        <div
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                            <div class="form-group" style="position: relative;">
+                                <label class="form-label">الخطوة 1: ابحث واختر الطالب</label>
+                                <div style="position: relative;">
+                                    <i class="fas fa-search"
+                                        style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                                    <input type="hidden" id="selectedStudentId">
+                                    <input type="text" class="form-control" id="studentSearch"
+                                        placeholder="اكتب للبحث..." autocomplete="off" style="padding-right: 40px;">
+                                </div>
+                                <div id="studentResults" class="search-results"></div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">الخطوة 2: اختر المادة</label>
+                                <select class="form-control" id="subjectId" required>
+                                    <option value="">جاري التحميل...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">الخطوة 3: اختر المحاضر</label>
+                                <select class="form-control" id="lecturerId" required disabled>
+                                    <option value="">اختر المادة أولاً</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style="text-align: left; margin-top: 15px;">
+                            <button type="submit" class="btn"
+                                style="background: var(--gradient-primary); color: white; padding: 12px 30px; border-radius: 30px;">
+                                <i class="fas fa-link"></i> اعتماد الربط بالمادة
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card" style="margin-top: 25px;">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-clipboard-list text-primary"
+                                style="margin-left: 8px;"></i> استعراض تسجيلات الطلاب</h3>
+                    </div>
+                    <div class="table-container" style="padding: 0 10px;">
+                        <table style="width: 100%; border-collapse: separate; border-spacing: 0 10px;">
+                            <thead>
+                                <tr style="background: rgba(15, 23, 42, 0.03);">
+                                    <th style="padding: 15px; border-radius: 0 8px 8px 0;">#</th>
+                                    <th style="padding: 15px;">الطالب</th>
+                                    <th style="padding: 15px;">اسم المستخدم</th>
+                                    <th style="padding: 15px; border-radius: 8px 0 0 8px;">سجل المواد المحملة</th>
+                                </tr>
+                            </thead>
+                            <tbody id="assignmentsTable">
+                                <tr>
+                                    <td colspan="4" style="text-align: center; padding: 40px;">
+                                        <i class="fas fa-spinner fa-spin"
+                                            style="font-size: 2rem; color: var(--primary); margin-bottom: 15px;"></i>
+                                        <p style="color: var(--text-muted);">جاري استرجاع البيانات...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- نافذة إضافة/تعديل طالب -->
+    <div class="modal-overlay" id="studentModal">
+        <div class="modal" style="border-radius: var(--radius-lg); box-shadow: var(--shadow-xl); max-width: 500px;">
+            <div class="modal-header">
+                <h3 id="modalTitle" style="color: var(--text-main); font-weight: 800;"><i
+                        class="fas fa-user-plus text-primary" style="margin-left: 10px;"></i> إضافة طالب</h3>
+                <button class="modal-close" onclick="closeModal()" style="color: var(--danger);"><i
+                        class="fas fa-times-circle"></i></button>
+            </div>
+
+            <form id="studentForm" style="padding: 10px;">
+                <input type="hidden" id="studentId">
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label class="form-label">الاسم الأول</label>
+                        <input type="text" class="form-control" id="firstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">الاسم الأخير</label>
+                        <input type="text" class="form-control" id="lastName" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">اسم المستخدم (للدخول)</label>
+                    <div style="position: relative;">
+                        <i class="fas fa-at"
+                            style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                        <input type="text" class="form-control" id="username" required
+                            style="padding-right: 40px; text-align: left; direction: ltr;">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">كلمة المرور</label>
+                    <div style="position: relative;">
+                        <i class="fas fa-lock"
+                            style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                        <input type="password" class="form-control" id="password" required
+                            style="padding-right: 40px; text-align: left; direction: ltr;">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">الجنس</label>
+                    <select class="form-control" id="gender" required>
+                        <option value="Male">ذكر</option>
+                        <option value="Female">أنثى</option>
+                    </select>
+                </div>
+
+                <div style="margin-top: 25px;">
+                    <button type="submit" class="btn"
+                        style="background: var(--gradient-primary); color: white; width: 100%; justify-content: center; padding: 12px; font-size: 1.1rem; border-radius: 30px;">
+                        <i class="fas fa-save"></i> حفظ التغييرات الداعمة
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Assignment Modal -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal" style="border-radius: var(--radius-lg); max-width: 450px;">
+            <div class="modal-header">
+                <h3 style="color: var(--text-main); font-weight: 800;"><i class="fas fa-edit text-primary"
+                        style="margin-left: 10px;"></i> تعديل قيد المادة</h3>
+                <button class="modal-close" onclick="closeEditModal()" style="color: var(--danger);"><i
+                        class="fas fa-times-circle"></i></button>
+            </div>
+            <form id="editForm" style="padding: 10px;">
+                <input type="hidden" id="editId">
+                <input type="hidden" id="editStudentId">
+
+                <div class="form-group">
+                    <label class="form-label">الطالب المعني (للاطلاع فقط)</label>
+                    <input type="text" class="form-control" id="editStudentName" readonly disabled
+                        style="background: var(--bg-main);">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">تعديل المادة</label>
+                    <select class="form-control" id="editSubjectId" required>
+                        <option value="">اختر المادة</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">تعديل المحاضر</label>
+                    <select class="form-control" id="editLecturerId" required>
+                        <option value="">اختر المحاضر</option>
+                    </select>
+                </div>
+
+                <div style="margin-top: 25px;">
+                    <button type="submit" class="btn"
+                        style="background: var(--gradient-primary); color: white; width: 100%; justify-content: center; padding: 12px; border-radius: 30px;">
+                        <i class="fas fa-save"></i> تحديث الربط الأكاديمي
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- نافذة التأكيد العصرية -->
+
+    <!-- حاوية التنبيهات -->
+
+    <script src="../js/api.js?v=2"></script>
+    <script src="../js/shared.js"></script>
+    <script>
+        checkAuth();
+
+        
+        const fullName = localStorage.getItem('fullName');
+        const firstName = localStorage.getItem('firstName');
+        if (fullName && fullName !== 'null' && fullName !== 'undefined') {
+            document.getElementById('headerAdminName').textContent = fullName;
+            const initials = fullName.substring(0, 1) + (fullName.indexOf(' ') > 0 ? fullName.substring(fullName.indexOf(' ') + 1, fullName.indexOf(' ') + 2) : '');
+            document.getElementById('userAvatarInitials').textContent = initials;
+        } else if (firstName && firstName !== 'null' && firstName !== 'undefined') {
+            document.getElementById('headerAdminName').textContent = firstName;
+            document.getElementById('userAvatarInitials').textContent = firstName.substring(0, 1);
+        }
+
+        
+        function switchTab(tabName) {
+            
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+            
+            document.getElementById('tab-' + tabName).classList.add('active');
+            event.target.closest('.tab-btn').classList.add('active');
+
+            
+            if (tabName === 'students') {
+                loadStudents();
+            } else if (tabName === 'assign') {
+                loadAssignData();
+            }
+        }
+
+        
+        let searchTimeout;
+        function searchStudents() {
+            const query = document.getElementById('searchInput').value;
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => loadStudents(query), 300);
+        }
+
+        let currentPage = 1;
+        const pageSize = 20;
+
+        async function loadStudents(query = '', page = 1) {
+            currentPage = page;
+            const result = query ? await StudentsAPI.search(query) : await StudentsAPI.getAll(page, pageSize);
+            const tbody = document.getElementById('studentsTable');
+            const paginationDiv = document.getElementById('pagination');
+
+            if (!result.success || (query ? result.data.length === 0 : result.data.items.length === 0)) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 30px; color: var(--text-muted);"><i class="fas fa-folder-open" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i> لا يوجد طلاب ليتم عرضهم</td></tr>';
+                paginationDiv.innerHTML = '';
+                return;
+            }
+
+            const data = query ? result.data : result.data.items;
+            data.sort((a, b) => a.firstName.localeCompare(b.firstName, 'ar'));
+
+            tbody.innerHTML = data.map((s, i) => `
+                <tr style="background: white; transform: translateY(0); box-shadow: 0 1px 3px rgba(0,0,0,0.02); transition: all 0.2s;">
+                    <td style="font-weight: bold; color: var(--text-muted); border-radius: 0 8px 8px 0;">${(currentPage - 1) * pageSize + i + 1}</td>
+                    <td style="font-weight: 600; color: var(--text-main);">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div style="width: 35px; height: 35px; border-radius: 50%; background: var(--gradient-primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem;">
+                                ${s.firstName.charAt(0)}
+                            </div>
+                            ${s.firstName}
+                        </div>
+                    </td>
+                    <td style="font-weight: 600; color: var(--text-main);">${s.lastName}</td>
+                    <td><code style="background: rgba(15,23,42,0.05); padding: 4px 8px; border-radius: 6px; color: var(--text-main); font-family: monospace;">${s.username}</code></td>
+                    <td style="text-align: center; border-radius: 8px 0 0 8px;">
+                        <button class="btn btn-sm" style="background: rgba(14, 165, 233, 0.1); color: var(--info); padding: 6px 12px; border-radius: 6px;" title="تعديل" onclick="editStudent(${s.studentId})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm" style="background: rgba(239, 68, 68, 0.1); color: var(--danger); padding: 6px 12px; border-radius: 6px;" title="حذف" onclick="deleteStudent(${s.studentId})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+            if (!query) {
+                const info = result.data;
+                
+                document.getElementById('studentCount').textContent = `إجمالي الطلاب المشاركين بالموقع: ${info.totalCount} طالب`;
+
+                paginationDiv.innerHTML = `
+                    <button class="btn btn-sm" style="background: white; border: 1px solid var(--border-color); color: var(--text-main);" ${!info.hasPrevious ? 'disabled' : ''} onclick="loadStudents('', ${currentPage - 1})">السابق <i class="fas fa-chevron-right" style="margin-right: 5px; font-size: 0.8rem;"></i></button>
+                    <span style="font-weight: 600; color: var(--text-muted); background: white; padding: 5px 15px; border-radius: 20px; box-shadow: var(--shadow-sm);">صفحة ${info.currentPage} من ${info.totalPages}</span>
+                    <button class="btn btn-sm" style="background: white; border: 1px solid var(--border-color); color: var(--text-main);" ${!info.hasNext ? 'disabled' : ''} onclick="loadStudents('', ${currentPage + 1})"><i class="fas fa-chevron-left" style="margin-left: 5px; font-size: 0.8rem;"></i> التالي</button>
+                `;
+            } else {
+                paginationDiv.innerHTML = '';
+            }
+        }
+
+        function openModal() {
+            document.getElementById('studentModal').classList.add('active');
+            document.getElementById('modalTitle').innerHTML = '<i class="fas fa-user-plus text-primary" style="margin-left: 10px;"></i> إضافة طالب جديد';
+            document.getElementById('studentForm').reset();
+            document.getElementById('studentId').value = '';
+        }
+
+        function closeModal() {
+            document.getElementById('studentModal').classList.remove('active');
+        }
+
+        async function editStudent(id) {
+            const result = await StudentsAPI.getById(id);
+            if (result.success) {
+                document.getElementById('studentId').value = result.data.studentId;
+                document.getElementById('firstName').value = result.data.firstName;
+                document.getElementById('lastName').value = result.data.lastName;
+                document.getElementById('username').value = result.data.username;
+                document.getElementById('password').value = result.data.password;
+
+                
+                if (result.data.gender) {
+                    const genderSelect = document.getElementById('gender');
+                    for (let i = 0; i < genderSelect.options.length; i++) {
+                        if (genderSelect.options[i].value === result.data.gender) {
+                            genderSelect.selectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+
+                document.getElementById('modalTitle').innerHTML = '<i class="fas fa-user-edit text-primary" style="margin-left: 10px;"></i> تعديل بيانات الطالب';
+                document.getElementById('studentModal').classList.add('active');
+            }
+        }
+
+        async function deleteStudent(id) {
+            const confirmed = await showConfirm('هل أنت متأكد من حذف هذا الطالب بالكامل؟ سيتم مسح بياناته من النظام نهائياً.');
+            if (confirmed) {
+                try {
+                    const result = await StudentsAPI.delete(id);
+                    if (result.success) {
+                        showFancyAlert('تم الحذف', 'تم مسح الطالب من سجلات النظام بنجاح', 'success');
+                        loadStudents('', currentPage);
+                    } else {
+                        showFancyAlert('فشل الحذف', 'ربما يكون الطالب مرتبطاً بكيانات أخرى في قاعدة البيانات', 'danger');
+                    }
+                } catch (e) {
+                    showFancyAlert('خطأ', 'تعذر الاتصال بالخادم', 'danger');
+                }
+            }
+        }
+
+        function validateStudentData(data) {
+            const errors = [];
+            if (data.firstName.length < 2) errors.push('الاسم الأول يجب أن يكون حرفين على الأقل');
+            if (data.lastName.length < 2) errors.push('الاسم الأخير يجب أن يكون حرفين على الأقل');
+            if (data.username.length < 3) errors.push('اسم المستخدم يجب أن يكون 3 أحرف على الأقل');
+            if (!/^[a-zA-Z0-9_]+$/.test(data.username)) errors.push('اسم المستخدم يجب أن يحتوي على أحرف إنجليزية وأرقام فقط (بدون مسافات)');
+            if (data.password.length < 4) errors.push('كلمة المرور يجب أن تكون 4 أحرف على الأقل');
+            return errors;
+        }
+
+        document.getElementById('studentForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalBtnHtml = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-left: 5px;"></i> جاري المعالجة...';
+            submitBtn.disabled = true;
+
+            const data = {
+                firstName: document.getElementById('firstName').value.trim(),
+                lastName: document.getElementById('lastName').value.trim(),
+                username: document.getElementById('username').value.trim(),
+                password: document.getElementById('password').value,
+                gender: document.getElementById('gender').value,
+                adminId: parseInt(localStorage.getItem('userId')) || 1
+            };
+
+            const errors = validateStudentData(data);
+            if (errors.length > 0) {
+                showFancyAlert('تأكد من البيانات', errors.join(' | '), 'danger');
+                submitBtn.innerHTML = originalBtnHtml;
+                submitBtn.disabled = false;
+                return;
+            }
+
+            const studentId = document.getElementById('studentId').value;
+            let result;
+
+            try {
+                if (studentId) {
+                    result = await StudentsAPI.update(studentId, data);
+                } else {
+                    result = await StudentsAPI.add(data);
+                }
+
+                if (result.success) {
+                    showFancyAlert('ناجح', studentId ? 'تم تحديث بيانات الطالب بسلام' : 'تم إضافة الطالب وتوثيقه بنجاح', 'success');
+                    closeModal();
+                    loadStudents('', studentId ? currentPage : 1);
+                } else {
+                    showFancyAlert('خطأ في العملية', result.data.message || 'حدث خطأ من الخادم', 'danger');
+                }
+            } catch (e) {
+                showFancyAlert('خطأ اتصال', 'لم نتمكن من الاتصال، حاول مجدداً', 'danger');
+            } finally {
+                submitBtn.innerHTML = originalBtnHtml;
+                submitBtn.disabled = false;
+            }
+        });
+
+        
+        let allAssignments = [];
+
+        async function loadAssignData() {
+            
+            setupSearchDropdown('studentSearch', 'studentResults', StudentsAPI.search, (id, name) => {
+                document.getElementById('selectedStudentId').value = id;
+                document.getElementById('studentSearch').value = name; 
+            });
+
+            const subjects = await SubjectsAPI.getAll();
+            if (subjects.success) {
+                const select = document.getElementById('subjectId');
+                const editSelect = document.getElementById('editSubjectId');
+                select.innerHTML = '<option value="">اختر المادة</option>';
+                editSelect.innerHTML = '<option value="">اختر المادة</option>';
+                subjects.data.forEach(s => {
+                    const opt = `<option value="${s.subjectId}">${s.subjectName}</option>`;
+                    select.innerHTML += opt;
+                    editSelect.innerHTML += opt;
+                });
+            }
+
+            loadAssignments();
+        }
+
+        document.getElementById('subjectId').addEventListener('change', async function () {
+            await loadLecturersForSubject(this.value, 'lecturerId');
+        });
+
+        document.getElementById('editSubjectId').addEventListener('change', async function () {
+            await loadLecturersForSubject(this.value, 'editLecturerId');
+        });
+
+        async function loadLecturersForSubject(subjectId, targetSelectId) {
+            const lecturerSelect = document.getElementById(targetSelectId);
+
+            if (!subjectId) {
+                lecturerSelect.innerHTML = '<option value="">اختر المادة أولاً</option>';
+                lecturerSelect.disabled = true;
+                return;
+            }
+
+            
+            lecturerSelect.innerHTML = '<option value="">جاري البحث عن دكاترة المادة...</option>';
+            lecturerSelect.disabled = true;
+
+            try {
+                const lecturers = await apiCall(`/lecturersubjects/GetBySubject/${subjectId}`);
+                lecturerSelect.innerHTML = '<option value="">اختر المحاضر المعني</option>';
+
+                if (lecturers.success && lecturers.data.length > 0) {
+                    lecturers.data.forEach(ls => {
+                        lecturerSelect.innerHTML += `<option value="${ls.lecturerId}">${ls.lecturer?.firstName || ''} ${ls.lecturer?.lastName || ''}</option>`;
+                    });
+                    lecturerSelect.disabled = false;
+                } else {
+                    lecturerSelect.innerHTML = '<option value="">لا يوجد محاضرين مسجلين لهذه المادة</option>';
+                    lecturerSelect.disabled = true;
+                }
+            } catch (e) {
+                lecturerSelect.innerHTML = '<option value="">خطأ في جلب المحاضرين</option>';
+            }
+        }
+
+        async function loadAssignments() {
+            try {
+                const result = await apiCall('/studentsubjects/GetAll');
+                const tbody = document.getElementById('assignmentsTable');
+
+                if (!result.success || result.data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 30px; color: var(--text-muted);"><i class="fas fa-folder-open" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i> لا توجد أي ارتباطات مسجلة</td></tr>';
+                    return;
+                }
+
+                allAssignments = result.data;
+
+                
+                const grouped = {};
+                result.data.forEach(a => {
+                    const studentId = a.studentId;
+                    if (!grouped[studentId]) {
+                        grouped[studentId] = {
+                            student: a.student,
+                            subjects: []
+                        };
+                    }
+                    grouped[studentId].subjects.push({
+                        id: a.studentSubjectId,
+                        subjectId: a.subjectId,
+                        lecturerId: a.lecturerId,
+                        subjectName: a.subject?.subjectName || '',
+                        lecturerName: a.lecturer ? (a.lecturer.firstName + ' ' + a.lecturer.lastName) : 'غير محدد'
+                    });
+                });
+
+                let index = 0;
+                tbody.innerHTML = Object.values(grouped).map(g => {
+                    index++;
+                    const subjectsList = g.subjects.map(s =>
+                        `<div style="padding: 10px 15px; margin: 5px 0; background: rgba(255,255,255,0.7); border: 1px solid var(--border-color); border-radius: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
+                            <div style="display: flex; flex-direction: column;">
+                                <span style="font-weight: 700; color: var(--text-main);"><i class="fas fa-book-open" style="color: var(--primary); margin-left: 5px; opacity: 0.7;"></i>${s.subjectName}</span>
+                                <span style="font-size: 0.85rem; color: var(--text-muted);"><i class="fas fa-chalkboard-teacher" style="margin-left: 3px;"></i>د. ${s.lecturerName}</span>
+                            </div>
+                            <div style="display: flex; gap: 5px;">
+                                <button class="btn btn-sm" onclick="editAssignment(${s.id})" style="padding: 6px 10px; background: rgba(14, 165, 233, 0.1); color: var(--info); border-radius: 6px;" title="تعديل"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-sm" onclick="deleteAssignment(${s.id})" style="padding: 6px 10px; background: rgba(239, 68, 68, 0.1); color: var(--danger); border-radius: 6px;" title="فك الارتباط"><i class="fas fa-unlink"></i></button>
+                            </div>
+                        </div>`
+                    ).join('');
+
+                    return `
+                    <tr style="background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+                        <td style="font-weight: bold; color: var(--text-muted); border-radius: 0 8px 8px 0;">${index}</td>
+                        <td style="font-weight: 600; color: var(--text-main);">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="width: 35px; height: 35px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem;">
+                                    ${g.student?.firstName?.charAt(0) || '؟'}
+                                </div>
+                                ${g.student?.firstName || 'بدون اسم'} ${g.student?.lastName || ''}
+                            </div>
+                        </td>
+                        <td><code style="background: rgba(15,23,42,0.05); padding: 4px 8px; border-radius: 6px; color: var(--text-main); font-family: monospace;">${g.student?.username || ''}</code></td>
+                        <td style="border-radius: 8px 0 0 8px;">
+                            <details style="cursor: pointer; background: rgba(79, 70, 229, 0.05); padding: 10px; border-radius: 8px; border: 1px solid rgba(79, 70, 229, 0.1);">
+                                <summary style="color: var(--primary); font-weight: 700; user-select: none; display: flex; align-items: center; gap: 8px; outline: none;">
+                                    <span style="background: var(--primary); color: white; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 0.8rem;">${g.subjects.length}</span>
+                                    مقررات تم تقييدها
+                                </summary>
+                                <div style="margin-top: 12px;">${subjectsList}</div>
+                            </details>
+                        </td>
+                    </tr>
+                `;
+                }).join('');
+            } catch (e) {
+                console.error("Error loading assignments:", e);
+                document.getElementById('assignmentsTable').innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px; color: var(--danger);">خطأ في جلب بيانات التسجيل</td></tr>';
+            }
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('active');
+        }
+
+        async function editAssignment(id) {
+            const assignment = allAssignments.find(a => a.studentSubjectId === id);
+            if (!assignment) return;
+
+            document.getElementById('editId').value = assignment.studentSubjectId;
+            document.getElementById('editStudentId').value = assignment.studentId;
+            document.getElementById('editStudentName').value = `${assignment.student?.firstName || ''} ${assignment.student?.lastName || ''}`;
+
+            document.getElementById('editSubjectId').value = assignment.subjectId;
+
+            
+            await loadLecturersForSubject(assignment.subjectId, 'editLecturerId');
+
+            if (assignment.lecturerId) {
+                setTimeout(() => {
+                    document.getElementById('editLecturerId').value = assignment.lecturerId;
+                }, 100);
+            }
+
+            document.getElementById('editModal').classList.add('active');
+        }
+
+        async function deleteAssignment(id) {
+            const confirmed = await showConfirm('هل أنت متأكد من فك ارتباط هذا الطالب بالمادة بالكامل؟', 'warning', 'نعم، فك الارتباط');
+            if (confirmed) {
+                try {
+                    const res = await apiCall(`/studentsubjects/Delete/${id}`, 'DELETE');
+                    if (res && res.success) {
+                        showFancyAlert('تم فك الارتباط', 'تم إلغاء تسجيل المادة بنجاح', 'success');
+                        loadAssignments();
+                    } else {
+                        showFancyAlert('فشل الإجراء', 'تعذر فك الارتباط في الوقت الحالي', 'danger');
+                    }
+                } catch (e) {
+                    showFancyAlert('خطأ', 'تعذر الاتصال بالخادم', 'danger');
+                }
+            }
+        }
+
+        document.getElementById('assignForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalBtnHtml = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-left: 5px;"></i> جاري التنفيذ...';
+            submitBtn.disabled = true;
+
+            const lecturerId = document.getElementById('lecturerId').value;
+            const studentId = document.getElementById('selectedStudentId').value;
+
+            if (!lecturerId || !studentId) {
+                showFancyAlert('تنبيه', 'يجب تحديد الطالب والمحاضر بشكل صحيح', 'danger');
+                submitBtn.innerHTML = originalBtnHtml;
+                submitBtn.disabled = false;
+                return;
+            }
+
+            try {
+                const result = await apiCall('/studentsubjects/Add', 'POST', {
+                    studentId: parseInt(studentId),
+                    subjectId: parseInt(document.getElementById('subjectId').value),
+                    lecturerId: parseInt(lecturerId)
+                });
+
+                if (result && result.success) {
+                    showFancyAlert('تمت الإضافة', 'تم تصديق ربط الطالب بنجاح ضمن الكشوفات', 'success');
+                    document.getElementById('studentSearch').value = '';
+                    document.getElementById('selectedStudentId').value = '';
+                    document.getElementById('subjectId').value = '';
+                    document.getElementById('lecturerId').innerHTML = '<option value="">اختر المادة أولاً</option>';
+                    document.getElementById('lecturerId').disabled = true;
+                    loadAssignments();
+                } else {
+                    
+                    if (result && result.data && result.data.message) {
+                        showFancyAlert('تعذر الربط', result.data.message, 'info');
+                    } else {
+                        showFancyAlert('خطأ غير متوقع', 'حدث خطأ أثناء الربط', 'danger');
+                    }
+                }
+            } catch (err) {
+                showFancyAlert('مشكلة اتصال', 'تعذر استكمال تسجيل الطالب في المادة', 'danger');
+            } finally {
+                submitBtn.innerHTML = originalBtnHtml;
+                submitBtn.disabled = false;
+            }
+        });
+
+        document.getElementById('editForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalBtnHtml = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-left: 5px;"></i> جاري الحفظ...';
+            submitBtn.disabled = true;
+
+            const id = document.getElementById('editId').value;
+            const studentId = document.getElementById('editStudentId').value;
+            const subjectId = document.getElementById('editSubjectId').value;
+            const lecturerId = document.getElementById('editLecturerId').value;
+
+            if (!lecturerId || !subjectId) {
+                showFancyAlert('تنبيه', 'يرجى مراجعة وتعبئة كافة الحقول المطلوبة', 'danger');
+                submitBtn.innerHTML = originalBtnHtml;
+                submitBtn.disabled = false;
+                return;
+            }
+
+            try {
+                const result = await apiCall(`/studentsubjects/Update/${id}`, 'PUT', {
+                    studentSubjectId: parseInt(id),
+                    studentId: parseInt(studentId),
+                    subjectId: parseInt(subjectId),
+                    lecturerId: parseInt(lecturerId)
+                });
+
+                if (result && result.success) {
+                    showFancyAlert('تم التحديث', 'تم تغيير مسار المادة بنجاح', 'success');
+                    closeEditModal();
+                    loadAssignments();
+                } else {
+                    showFancyAlert('تعذر التحديث', result?.data?.message || 'لربما تم تسجيل هذا المقرر سابقاً للطالب', 'danger');
+                }
+            } catch (err) {
+                showFancyAlert('مشكلة اتصال', 'لم نتمكن من حفظ التغييرات', 'danger');
+            } finally {
+                submitBtn.innerHTML = originalBtnHtml;
+                submitBtn.disabled = false;
+            }
+        });
+
+        
+        
+        function localSetupSearchDropdown(inputId, resultsId, searchFunc, onSelect) {
+            const input = document.getElementById(inputId);
+            const results = document.getElementById(resultsId);
+            let timeout = null;
+
+            input.addEventListener('input', function () {
+                clearTimeout(timeout);
+                const query = this.value.trim();
+
+                if (query.length === 0) {
+                    results.style.display = 'none';
+                    return;
+                }
+
+                timeout = setTimeout(async () => {
+                    const res = await searchFunc(query);
+                    results.innerHTML = '';
+
+                    if (res.success && res.data.length > 0) {
+                        res.data.forEach(item => {
+                            const name = `${item.firstName} ${item.lastName} - ${item.username}`;
+                            const div = document.createElement('div');
+                            div.className = 'search-item';
+                            div.innerHTML = `<i class="fas fa-user-circle text-primary" style="opacity:0.7"></i> <span style="font-weight:600">${item.firstName} ${item.lastName}</span> <span style="color:var(--text-muted); font-size:0.85rem">(${item.username})</span>`;
+                            div.onclick = () => {
+                                onSelect(item.studentId, `${item.firstName} ${item.lastName}`);
+                                results.style.display = 'none';
+                            };
+                            results.appendChild(div);
+                        });
+                        results.style.display = 'block';
+                    } else {
+                        results.innerHTML = '<div class="search-item" style="color:var(--danger)">لا يوجد نتائج مترابطة</div>';
+                        results.style.display = 'block';
+                    }
+                }, 300);
+            });
+
+            
+            document.addEventListener('click', function (e) {
+                if (e.target !== input && e.target !== results && !results.contains(e.target)) {
+                    results.style.display = 'none';
+                }
+            });
+        }
+
+        
+        window.setupSearchDropdown = localSetupSearchDropdown;
+
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            loadStudents();
+        });
+    </script>
+</body>
+
+</html>

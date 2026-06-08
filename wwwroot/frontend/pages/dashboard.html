@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام تقييم المحاضرين - لوحة تحكم الإدارة</title>
+    <!-- خطوط جوجل (Cairo) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .premium-stat-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 25px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition-bounce);
+            border-right: 4px solid var(--primary);
+        }
+
+        .premium-stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .premium-stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 70%);
+            border-radius: 50%;
+            transform: translate(-30%, -30%);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .premium-stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+            flex-shrink: 0;
+            box-shadow: var(--shadow-md);
+        }
+
+        .premium-stat-info {
+            flex-grow: 1;
+        }
+
+        .premium-stat-value {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--text-main);
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+
+        .premium-stat-label {
+            font-size: 1rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- تأثيرات حركية للخلفية -->
+    <div
+        style="position: fixed; top:0; left:0; width:100%; height:100%; overflow:hidden; z-index: -1; pointer-events:none;">
+        <div
+            style="position:absolute; width: 600px; height: 600px; background: rgba(79, 70, 229, 0.05); border-radius: 50%; filter: blur(80px); top: -200px; right: -100px; animation: pulse-subtle 8s infinite alternate;">
+        </div>
+        <div
+            style="position:absolute; width: 500px; height: 500px; background: rgba(14, 165, 233, 0.05); border-radius: 50%; filter: blur(80px); bottom: -100px; left: -100px; animation: pulse-subtle 10s infinite alternate-reverse;">
+        </div>
+    </div>
+
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()"><i class="fas fa-bars"></i></button>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileMenu()"></div>
+    <div class="app-container">
+        <!-- القائمة الجانبية المحدثة -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div
+                    style="background: var(--gradient-primary); width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; box-shadow: var(--shadow-md);">
+                    <i class="fas fa-shield-alt" style="color: white; font-size: 1.5rem;"></i>
+                </div>
+                <h1 style="font-size: 1.2rem; margin: 0;">لوحة الإدارة</h1>
+                <p>نظام التقييم الشامل</p>
+            </div>
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link active">
+                        <i class="fas fa-home"></i>
+                        <span>الرئيسية</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="students.html" class="nav-link">
+                        <i class="fas fa-user-graduate"></i>
+                        <span>إدارة الطلاب</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="lecturers.html" class="nav-link">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <span>إدارة المحاضرين</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="subjects.html" class="nav-link">
+                        <i class="fas fa-book"></i>
+                        <span>إدارة المواد</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="questions.html" class="nav-link">
+                        <i class="fas fa-question-circle"></i>
+                        <span>إدارة الأسئلة</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="reports.html" class="nav-link">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>التقارير والإحصائيات</span>
+                    </a>
+                </li>
+                <li class="nav-item" style="margin-top: auto;">
+                    <a href="#" class="nav-link logout-btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>تسجيل الخروج</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- المحتوى الرئيسي -->
+        <main class="main-content">
+            <!-- الهيدر العلوي -->
+            <div class="page-header" style="animation: slideInRight 0.5s ease-out;">
+                <div>
+                    <h2 class="page-title">
+                        <i class="fas fa-tachometer-alt" style="color: var(--primary); font-size: 1.8rem;"></i>
+                        لوحة التحكم
+                    </h2>
+                    <h2 id="welcomeMessage"
+                        style="margin: 5px 0 0 0; color: var(--text-muted); font-size: 1.1rem; font-weight: 600;">مرحباً
+                        بك، جاري التحميل...</h2>
+                </div>
+
+                <div class="user-profile-badge">
+                    <div class="user-avatar" id="userAvatarInitials" style="background: var(--gradient-secondary);">إ
+                    </div>
+                    <div style="display: flex; flex-direction: column;">
+                        <span style="font-weight: 700; font-size: 0.95rem;">الإدارة العليا</span>
+                        <span style="font-size: 0.8rem; color: var(--success);"><i class="fas fa-circle"
+                                style="font-size: 0.5rem; margin-left: 3px;"></i>متصل</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid" style="animation: slideUpFade 0.6s ease-out;">
+                <div class="premium-stat-card">
+                    <div class="premium-stat-icon" style="background: var(--gradient-primary);">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <div class="premium-stat-info">
+                        <div class="premium-stat-value" id="studentsCount">
+                            <i class="fas fa-spinner fa-spin" style="font-size: 1rem;"></i>
+                        </div>
+                        <div class="premium-stat-label">إجمالي الطلاب</div>
+                    </div>
+                </div>
+
+                <div class="premium-stat-card" style="border-right-color: var(--success);">
+                    <div class="premium-stat-icon"
+                        style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <div class="premium-stat-info">
+                        <div class="premium-stat-value" id="lecturersCount">
+                            <i class="fas fa-spinner fa-spin" style="font-size: 1rem;"></i>
+                        </div>
+                        <div class="premium-stat-label">أعضاء هيئة التدريس</div>
+                    </div>
+                </div>
+
+                <div class="premium-stat-card" style="border-right-color: var(--warning);">
+                    <div class="premium-stat-icon"
+                        style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="premium-stat-info">
+                        <div class="premium-stat-value" id="subjectsCount">
+                            <i class="fas fa-spinner fa-spin" style="font-size: 1rem;"></i>
+                        </div>
+                        <div class="premium-stat-label">المقررات الدراسية</div>
+                    </div>
+                </div>
+
+                <div class="premium-stat-card" style="border-right-color: var(--danger);">
+                    <div class="premium-stat-icon"
+                        style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                    <div class="premium-stat-info">
+                        <div class="premium-stat-value" id="evaluationsCount">
+                            <i class="fas fa-spinner fa-spin" style="font-size: 1rem;"></i>
+                        </div>
+                        <div class="premium-stat-label">التقييمات المنجزة</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px; margin-top: 25px;">
+                <!-- الإجراءات السريعة وحالة النظام -->
+                <div class="card"
+                    style="animation: slideUpFade 0.7s ease-out forwards; animation-delay: 0.1s; opacity: 0;">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-bolt text-warning" style="margin-left: 8px;"></i> التحكم
+                            بالنظام</h3>
+                    </div>
+
+                    <div style="padding: 20px;">
+                        <!-- حالة التقييم -->
+                        <div
+                            style="margin-bottom: 25px; padding: 20px; border-radius: var(--radius-lg); background: rgba(15, 23, 42, 0.03); border: 1px dashed var(--border-color); display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <h4 style="margin: 0 0 5px 0; color: var(--text-main); font-size: 1.1rem;">حالة بوابة
+                                    التقييم</h4>
+                                <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">تتحكم في إمكانية
+                                    دخول الطلاب للتقييم</p>
+                            </div>
+                            <div id="evaluationStatus"
+                                style="font-weight: 800; font-size: 1.1rem; padding: 8px 15px; border-radius: 20px; background: white; box-shadow: var(--shadow-sm);">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+
+                        <!-- أزرار التحكم -->
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <button id="openEvalBtn" onclick="openEvaluation()" class="btn"
+                                style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; width: 100%; justify-content: center; padding: 12px; display: none;">
+                                <i class="fas fa-unlock-alt" style="margin-left: 8px;"></i> فتح التقييم للطلاب
+                            </button>
+
+                            <button id="closeEvalBtn" onclick="closeEvaluation()" class="btn"
+                                style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; width: 100%; justify-content: center; padding: 12px; display: none;">
+                                <i class="fas fa-lock" style="margin-left: 8px;"></i> إغلاق بوابة التقييم
+                            </button>
+
+                            <hr style="border: none; border-top: 1px solid var(--border-color); margin: 5px 0;">
+
+                            <button onclick="resetEvaluations()" class="btn"
+                                style="background: white; color: var(--danger); border: 1px solid var(--danger); width: 100%; justify-content: center; padding: 12px; transition: all 0.3s;">
+                                <i class="fas fa-archive" style="margin-left: 8px;"></i> أرشفة جميع التقييمات وبدء دورة
+                                جديدة
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Evaluations -->
+                <div class="card"
+                    style="animation: slideUpFade 0.7s ease-out forwards; animation-delay: 0.2s; opacity: 0; display: flex; flex-direction: column;">
+                    <div class="card-header"
+                        style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3 class="card-title"><i class="fas fa-history text-primary" style="margin-left: 8px;"></i>
+                            أحدث التقييمات الواردة</h3>
+                        <a href="reports.html"
+                            style="font-size: 0.9rem; color: var(--primary); text-decoration: none; font-weight: 600;">عرض
+                            الكل <i class="fas fa-chevron-left" style="font-size: 0.8rem; margin-right: 3px;"></i></a>
+                    </div>
+
+                    <div class="table-container" style="flex-grow: 1; padding: 0 10px 15px 10px;">
+                        <table style="width: 100%; border-collapse: separate; border-spacing: 0 8px;">
+                            <thead>
+                                <tr style="background: rgba(15, 23, 42, 0.02);">
+                                    <th
+                                        style="padding: 12px; border-radius: 0 8px 8px 0; color: var(--text-muted); font-weight: 600;">
+                                        #</th>
+                                    <th style="padding: 12px; color: var(--text-muted); font-weight: 600;">المحاضر</th>
+                                    <th style="padding: 12px; color: var(--text-muted); font-weight: 600;">المادة/المواد
+                                    </th>
+                                    <th
+                                        style="padding: 12px; border-radius: 8px 0 0 8px; color: var(--text-muted); font-weight: 600;">
+                                        مقتطف التقييم</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentEvaluations">
+                                <tr>
+                                    <td colspan="4" style="text-align: center; padding: 30px;">
+                                        <i class="fas fa-spinner fa-spin"
+                                            style="font-size: 2rem; color: var(--primary); margin-bottom: 10px;"></i>
+                                        <p style="color: var(--text-muted);">جاري مزامنة البيانات...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- نافذة التأكيد العصرية -->
+
+    <!-- حاوية التنبيهات -->
+
+    <script src="../js/api.js"></script>
+    <script src="../js/shared.js"></script>
+    <script>
+        
+        checkAuth();
+
+        
+        setupHeaderUserInfo({ welcomeId: 'welcomeMessage', prefix: 'المدير: ' });
+
+        
+        let lecturersMap = {};
+
+        
+        async function loadStats() {
+            
+            try {
+                const students = await StudentsAPI.getAll();
+                const studentsEl = document.getElementById('studentsCount');
+                if (students && students.success) {
+                    const count = students.data.totalCount || 0;
+                    animateValue(studentsEl, 0, count, 1000);
+                } else {
+                    studentsEl.textContent = '0';
+                }
+            } catch (err) {
+                console.error("Error loading students count:", err);
+                document.getElementById('studentsCount').textContent = '0';
+            }
+
+            
+            try {
+                const lecturers = await LecturersAPI.getAll();
+                const lecturersEl = document.getElementById('lecturersCount');
+                if (lecturers && lecturers.success) {
+                    animateValue(lecturersEl, 0, lecturers.data.length, 1000);
+                    
+                    lecturers.data.forEach(l => {
+                        lecturersMap[l.lecturerId] = l.subjects && l.subjects.length > 0 ? l.subjects.join(' / ') : '';
+                    });
+                } else {
+                    lecturersEl.textContent = '0';
+                }
+            } catch (err) {
+                console.error("Error loading lecturers count:", err);
+                document.getElementById('lecturersCount').textContent = '0';
+            }
+
+            
+            try {
+                const subjects = await SubjectsAPI.getAll();
+                const subjectsEl = document.getElementById('subjectsCount');
+                if (subjects && subjects.success) {
+                    animateValue(subjectsEl, 0, subjects.data.length, 1000);
+                } else {
+                    subjectsEl.textContent = '0';
+                }
+            } catch (err) {
+                console.error("Error loading subjects count:", err);
+                document.getElementById('subjectsCount').textContent = '0';
+            }
+
+            
+            let evaluationsData = [];
+            try {
+                const evaluations = await EvaluationsAPI.getAll();
+                const evaluationsEl = document.getElementById('evaluationsCount');
+                if (evaluations && evaluations.success) {
+                    evaluationsData = evaluations.data || [];
+                    animateValue(evaluationsEl, 0, evaluationsData.length, 1000);
+                } else {
+                    evaluationsEl.textContent = '0';
+                }
+            } catch (err) {
+                console.error("Error loading evaluations count:", err);
+                document.getElementById('evaluationsCount').textContent = '0';
+            }
+
+            
+            try {
+                loadRecentEvaluations(evaluationsData);
+            } catch (err) {
+                console.error("Error displaying recent evaluations:", err);
+                document.getElementById('recentEvaluations').innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px; color: var(--text-muted);">حدث خطأ أثناء عرض التقييمات</td></tr>';
+            }
+        }
+
+        
+        function loadRecentEvaluations(evaluations) {
+            const tbody = document.getElementById('recentEvaluations');
+
+            if (!evaluations || evaluations.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 30px; color: var(--text-muted); font-weight: 600;"><i class="fas fa-inbox" style="font-size: 1.8rem; display: block; margin-bottom: 8px; color: var(--text-muted);"></i>لا توجد تقييمات واردة حالياً</td></tr>';
+                return;
+            }
+
+            const recent = evaluations.slice(-5).reverse();
+            let html = '';
+
+            recent.forEach((e, i) => {
+                
+                const answer = e.textAnswer || '';
+                const shortAnswer = answer.length > 40 ? answer.substring(0, 40) + '...' : answer;
+                
+                const lecturerSubjects = lecturersMap[e.lecturerId] || e.subjectName || 'غير محدد';
+
+                const answerBadge = answer
+                    ? `<span
+        style="background: rgba(14, 165, 233, 0.1); color: var(--info); padding: 4px 10px; border-radius: 12px; font-size: 0.85rem; display: inline-block;">${shortAnswer}</span>`
+                    : '<span style="color: var(--text-muted); font-size: 0.85rem;">بدون تعليق نصي</span>';
+
+                html += `
+    <tr
+        style="background: white; transform: translateY(0); box-shadow: 0 1px 3px rgba(0,0,0,0.02); transition: all 0.2s;">
+        <td style="font-weight: bold; color: var(--text-muted);">${i + 1}</td>
+        <td style="font-weight: 600; color: var(--text-main);">
+            <i class="fas fa-user-circle" style="color: var(--primary); margin-left: 5px; opacity: 0.7;"></i>
+            ${e.lecturerName || 'غير معروف'}
+        </td>
+        <td><span
+                style="background: rgba(15, 23, 42, 0.05); padding: 2px 8px; border-radius: 6px; font-size: 0.85rem;">${lecturerSubjects}</span>
+        </td>
+        <td style="max-width: 250px;">${answerBadge}</td>
+    </tr>
+    `;
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        
+        async function resetEvaluations() {
+            const confirmed = await showConfirm('هل أنت متأكد من بدء دورة تقييم جديدة؟ سيتم مسح/أرشفة جميع التقييمات الحالية نهائياً ولن تظهر في الإحصائيات.', 'danger', 'نعم، أرشف وابدأ');
+            if (confirmed) {
+                try {
+                    const result = await apiCall('/evaluations/Reset', 'POST');
+                    if (result && result.success) {
+                        showFancyAlert('تمت الأرشفة', result.data.message || 'تم بدء دورة تقييم جديدة بنجاح', 'success');
+                        setTimeout(() => loadStats(), 1000);
+                    } else {
+                        showFancyAlert('فشل الإجراء', 'حدث خطأ أثناء محاولة إعادة ضبط التقييمات', 'danger');
+                    }
+                } catch (err) {
+                    showFancyAlert('خطأ خادم', 'تعذر الاتصال بالخادم، يرجى المحاولة لاحقاً', 'danger');
+                }
+            }
+        }
+
+        
+        async function checkEvaluationStatus() {
+            try {
+                const res = await apiCall('/settings/IsEvaluationOpen', 'GET');
+                if (res && res.success && res.data) {
+                    updateEvaluationStatusUI(res.data.isOpen);
+                } else {
+                    document.getElementById('evaluationStatus').innerHTML = '<span style="color: var(--warning);"><i class="fas fa-exclamation-triangle"></i> تعذر الاتصال ببيانات النظام</span>';
+                    document.getElementById('openEvalBtn').style.display = 'flex';
+                    document.getElementById('closeEvalBtn').style.display = 'flex';
+                }
+            } catch (e) {
+                document.getElementById('evaluationStatus').innerHTML = '<span style="color: var(--warning);"><i class="fas fa-exclamation-triangle"></i> تعذر الاتصال ببيانات النظام</span>';
+                document.getElementById('openEvalBtn').style.display = 'flex';
+            }
+        }
+
+        function updateEvaluationStatusUI(isOpen) {
+            const statusEl = document.getElementById('evaluationStatus');
+            const openBtn = document.getElementById('openEvalBtn');
+            const closeBtn = document.getElementById('closeEvalBtn');
+
+            if (isOpen) {
+                statusEl.innerHTML = '<span style="color: var(--success);"><i class="fas fa-check-circle" style="margin-left: 5px;"></i> التقييم مفتوح لاستقبال الردود</span>';
+                statusEl.style.color = 'var(--success)';
+                statusEl.style.border = '1px solid rgba(16, 185, 129, 0.3)';
+                statusEl.style.background = 'rgba(16, 185, 129, 0.05)';
+                openBtn.style.display = 'none';
+                closeBtn.style.display = 'flex';
+            } else {
+                statusEl.innerHTML = '<span style="color: var(--danger);"><i class="fas fa-lock" style="margin-left: 5px;"></i> التقييم مغلق حالياً</span>';
+                statusEl.style.color = 'var(--danger)';
+                statusEl.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+                statusEl.style.background = 'rgba(239, 68, 68, 0.05)';
+                openBtn.style.display = 'flex';
+                closeBtn.style.display = 'none';
+            }
+        }
+
+        async function openEvaluation() {
+            const confirmed = await showConfirm('هل أنت متأكد من رغبتك في فتح بوابة التقييم للطلاب؟', 'info', 'نعم، افتح البوابة');
+            if (confirmed) {
+                try {
+                    const res = await apiCall('/settings/OpenEvaluation', 'POST');
+                    if (res && res.success) {
+                        showFancyAlert('تم الفتح بنجاح', 'بوابة التقييم متاحة الآن للطلاب', 'success');
+                        updateEvaluationStatusUI(true);
+                    } else {
+                        showFancyAlert('فشل الإجراء', 'حدث خطأ أثناء فتح بوابة التقييم', 'danger');
+                    }
+                } catch (e) {
+                    showFancyAlert('خطأ خادم', 'تعذر الاتصال بالخادم', 'danger');
+                }
+            }
+        }
+
+        async function closeEvaluation() {
+            const confirmed = await showConfirm('هل تريد إغلاق بوابة التقييم؟ لن يتمكن الطلاب من إرسال ردود جديدة.', 'warning', 'نعم، إغلاق');
+            if (confirmed) {
+                try {
+                    const res = await apiCall('/settings/CloseEvaluation', 'POST');
+                    if (res && res.success) {
+                        showFancyAlert('تم الإغلاق', 'تم إغلاق بوابة التقييم بنجاح', 'info');
+                        updateEvaluationStatusUI(false);
+                    } else {
+                        showFancyAlert('فشل الإجراء', 'حدث خطأ أثناء إغلاق بوابة التقييم', 'danger');
+                    }
+                } catch (e) {
+                    showFancyAlert('خطأ خادم', 'تعذر الاتصال بالخادم', 'danger');
+                }
+            }
+        }
+
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            loadStats();
+            checkEvaluationStatus();
+        });
+    </script>
+</body>
+
+</html>

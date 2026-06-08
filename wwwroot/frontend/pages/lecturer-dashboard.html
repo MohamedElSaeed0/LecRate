@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام تقييم المحاضرين - تقييماتي</title>
+    <!-- خطوط جوجل (Cairo) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .answer-text {
+            background: rgba(15, 23, 42, 0.03);
+            padding: 12px 15px;
+            border-radius: 8px;
+            max-width: 450px;
+            word-wrap: break-word;
+            border-right: 3px solid var(--info);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin: 5px 0;
+        }
+
+        .rating-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-weight: 800;
+            font-size: 1.2rem;
+            min-width: 90px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .rating-high {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.2) 100%);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .rating-medium {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(217, 119, 6, 0.2) 100%);
+            color: var(--warning);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .rating-low {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.2) 100%);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .rating-none {
+            background: rgba(100, 116, 139, 0.1);
+            color: var(--text-muted);
+            border: 1px dashed rgba(100, 116, 139, 0.3);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- تأثيرات حركية للخلفية بالشكل العصري -->
+    <div
+        style="position: fixed; top:0; left:0; width:100%; height:100%; overflow:hidden; z-index: -1; pointer-events:none;">
+        <div
+            style="position:absolute; width: 600px; height: 600px; background: rgba(79, 70, 229, 0.05); border-radius: 50%; filter: blur(80px); top: -200px; right: -100px; animation: pulse-subtle 8s infinite alternate;">
+        </div>
+        <div
+            style="position:absolute; width: 500px; height: 500px; background: rgba(14, 165, 233, 0.05); border-radius: 50%; filter: blur(80px); bottom: -100px; left: -100px; animation: pulse-subtle 10s infinite alternate-reverse;">
+        </div>
+    </div>
+
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()"><i class="fas fa-bars"></i></button>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileMenu()"></div>
+    <div class="app-container">
+        <!-- القائمة الجانبية المحدثة -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div
+                    style="background: var(--gradient-primary); width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; box-shadow: var(--shadow-md);">
+                    <i class="fas fa-chalkboard-teacher" style="color: white; font-size: 1.5rem;"></i>
+                </div>
+                <h1 style="font-size: 1.2rem; margin: 0;">بوابة المحاضر</h1>
+                <p>نظام التقييم الشامل</p>
+            </div>
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="lecturer-dashboard.html" class="nav-link active">
+                        <i class="fas fa-chart-line"></i><span>مؤشرات الأداء وتقييماتي</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="all-ratings.html" class="nav-link">
+                        <i class="fas fa-users"></i><span>تقييمات أعضاء هيئة التدريس</span>
+                    </a>
+                </li>
+                <li class="nav-item" style="margin-top: auto;">
+                    <a href="#" class="nav-link logout-btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i><span>تسجيل الخروج</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <!-- الهيدر العلوي -->
+            <div class="page-header" style="animation: slideInRight 0.5s ease-out;">
+                <div>
+                    <h2 class="page-title">
+                        <i class="fas fa-chart-line" style="color: var(--primary); font-size: 1.8rem;"></i>
+                        لوحة مؤشرات الأداء الخاصة بك
+                    </h2>
+                    <p style="color: var(--text-muted); margin-top: 5px;">مرحباً بك دكتور، هنا يمكنك متابعة تقييمك العام
+                        وردود الطلاب</p>
+                </div>
+
+                <div class="user-profile-badge">
+                    <div class="user-avatar" id="userAvatarInitials" style="background: var(--gradient-secondary);">د
+                    </div>
+                    <div style="display: flex; flex-direction: column;">
+                        <span style="font-weight: 700; font-size: 0.95rem;">د. <span
+                                id="headerLecturerName">أستاذ</span></span>
+                        <span style="font-size: 0.8rem; color: var(--success);"><i class="fas fa-circle"
+                                style="font-size: 0.5rem; margin-left: 3px;"></i>عضو هيئة تدريس</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ملخص التقييمات - بطاقات إحصائيات عصرية -->
+            <div class="stats-grid" style="animation: slideUpFade 0.6s ease-out backwards; animation-delay: 0.1s;">
+                <div class="stat-card primary">
+                    <i class="fas fa-comments stat-icon"></i>
+                    <div>
+                        <div class="stat-number" id="totalEvaluations"><i class="fas fa-spinner fa-spin text-sm"
+                                style="font-size: 1.5rem;"></i></div>
+                        <div class="stat-label">إجمالي ردود ومشاركات الطلاب</div>
+                    </div>
+                </div>
+
+                <div class="stat-card green"
+                    style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(5, 150, 105, 0.1) 100%); border: 1px solid rgba(16, 185, 129, 0.2);">
+                    <i class="fas fa-star stat-icon"
+                        style="color: var(--success); background: rgba(16, 185, 129, 0.1);"></i>
+                    <div>
+                        <div class="stat-number" id="adminRating">
+                            <i class="fas fa-spinner fa-spin text-sm" style="font-size: 1.5rem;"></i>
+                        </div>
+                        <div class="stat-label">التقييم العام المعتمد من الإدارة (من 100)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- إجابات الطلاب المفصلة -->
+            <div class="card"
+                style="border-top: 4px solid var(--primary); animation: slideUpFade 0.6s ease-out backwards; animation-delay: 0.2s;">
+                <div class="card-header" style="border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 15px;">
+                    <h3 class="card-title" style="margin: 0;"><i class="fas fa-clipboard-list text-primary"
+                            style="margin-left: 10px;"></i> سجل مشاركات الطلاب (بدون أسماء)</h3>
+                </div>
+                <div class="table-container" style="padding: 10px 0;">
+                    <table style="width: 100%; border-collapse: separate; border-spacing: 0 8px;">
+                        <thead>
+                            <tr style="background: rgba(15, 23, 42, 0.03);">
+                                <th style="padding: 15px; border-radius: 0 8px 8px 0; color: var(--text-main);">#</th>
+                                <th style="padding: 15px; color: var(--text-main);">رمز المقرر / اسم المادة</th>
+                                <th style="padding: 15px; color: var(--text-main); width: 25%;">السؤال المطروح</th>
+                                <th
+                                    style="padding: 15px; border-radius: 8px 0 0 8px; color: var(--text-main); width: 35%;">
+                                    رأي وتعليق الطالب</th>
+                            </tr>
+                        </thead>
+                        <tbody id="evaluationsTable">
+                            <tr>
+                                <td colspan="4" style="text-align: center; padding: 40px;">
+                                    <i class="fas fa-spinner fa-spin"
+                                        style="font-size: 2rem; color: var(--primary); margin-bottom: 15px;"></i>
+                                    <p style="color: var(--text-muted); font-weight: 600;">جاري تحميل استبيانات
+                                        الطلاب...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/shared.js"></script>
+    <script>
+        checkAuth();
+
+        
+        const fullName = localStorage.getItem('fullName');
+        const firstName = localStorage.getItem('firstName');
+
+        if (fullName && fullName !== 'null' && fullName !== 'undefined') {
+            document.getElementById('headerLecturerName').textContent = fullName;
+            document.getElementById('userAvatarInitials').textContent = fullName.substring(0, 1);
+        } else if (firstName) {
+            document.getElementById('headerLecturerName').textContent = firstName;
+            document.getElementById('userAvatarInitials').textContent = firstName.substring(0, 1);
+        }
+
+        const lecturerId = localStorage.getItem('userId');
+
+        async function loadMyEvaluations() {
+            try {
+                
+                const result = await apiCall(`/evaluations/GetByLecturer/${lecturerId}`);
+                const tbody = document.getElementById('evaluationsTable');
+
+                if (!result || !result.success || result.data.length === 0) {
+                    tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 40px; color: var(--text-muted);">
+                            <i class="fas fa-folder-open" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                            <p style="font-weight: 600; font-size: 1.1rem;">لا توجد مشاركات أو إجابات مسجلة من الطلاب بعد</p>
+                        </td>
+                    </tr>`;
+                    document.getElementById('totalEvaluations').textContent = '0';
+                } else {
+                    const evaluations = result.data;
+
+                    
+                    animateValue('totalEvaluations', 0, evaluations.length, 1000);
+
+                    
+                    tbody.innerHTML = evaluations.map((e, i) => `
+                        <tr style="background: white; border-bottom: 1px solid rgba(0,0,0,0.03); transform: translateY(0); box-shadow: 0 1px 3px rgba(0,0,0,0.02); transition: all 0.2s;">
+                            <td style="font-weight: bold; color: var(--text-muted); border-radius: 0 8px 8px 0; text-align: center;">
+                                <span style="background: rgba(15,23,42,0.05); padding: 5px 12px; border-radius: 20px;">${i + 1}</span>
+                            </td>
+                            <td style="font-weight: 700; color: var(--primary);">
+                                <i class="fas fa-book" style="opacity: 0.5; margin-left: 5px;"></i> ${e.subjectName || '-'}
+                            </td>
+                            <td style="font-weight: 600; color: var(--text-main); line-height: 1.5;">${e.questionText || '-'}</td>
+                            <td style="border-radius: 8px 0 0 8px;">
+                                <div class="answer-text">
+                                    <i class="fas fa-quote-right" style="color: var(--info); opacity: 0.3; margin-left: 5px;"></i>
+                                    ${e.textAnswer || '-'}
+                                </div>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+
+                
+                const lecturerData = await LecturersAPI.getAll();
+                const adminRatingContainer = document.getElementById('adminRating');
+
+                if (lecturerData && lecturerData.success) {
+                    const myData = lecturerData.data.find(l => l.lecturerId == lecturerId);
+
+                    if (myData && myData.adminRating && myData.adminRating > 0) {
+                        const rating = myData.adminRating;
+                        let ratingClass = rating >= 75 ? 'rating-high' : rating >= 50 ? 'rating-medium' : 'rating-low';
+                        adminRatingContainer.innerHTML = `<span class="rating-badge ${ratingClass}">${rating} <span style="font-size: 0.6em; margin-right: 2px;">/ 100</span></span>`;
+                    } else {
+                        adminRatingContainer.innerHTML = '<span class="rating-badge rating-none" style="font-size: 0.9rem;">لم يتم الاعتماد بعد</span>';
+                    }
+                } else {
+                    adminRatingContainer.innerHTML = '<span class="rating-badge rating-none">غير متوفر</span>';
+                }
+            } catch (err) {
+                console.error("Error loading lecturer dashboard:", err);
+                document.getElementById('totalEvaluations').textContent = '0';
+                document.getElementById('adminRating').innerHTML = '<span class="rating-badge rating-none">خطأ اتصال</span>';
+                document.getElementById('evaluationsTable').innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--danger); padding: 20px;">حدث خطأ أثناء تحميل البيانات</td></tr>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadMyEvaluations();
+        });
+    </script>
+</body>
+
+</html>
