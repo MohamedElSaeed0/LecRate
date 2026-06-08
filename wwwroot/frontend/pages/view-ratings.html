@@ -352,12 +352,11 @@
                 }
 
                 
-                const allEvals = await EvaluationsAPI.getAll();
+                const reportRes = await EvaluationsAPI.getReport();
                 const evalCounts = {};
-                if (allEvals && allEvals.success) {
-                    allEvals.data.forEach(e => {
-                        const name = e.lecturerName;
-                        evalCounts[name] = (evalCounts[name] || 0) + 1;
+                if (reportRes && reportRes.success) {
+                    reportRes.data.forEach(r => {
+                        evalCounts[r.lecturerName] = r.totalEvaluations || 0;
                     });
                 }
 

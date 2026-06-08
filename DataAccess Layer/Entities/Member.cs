@@ -1,6 +1,6 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace ProfRate.Entities
+namespace LecRate.Entities
 {
     
     public class Member

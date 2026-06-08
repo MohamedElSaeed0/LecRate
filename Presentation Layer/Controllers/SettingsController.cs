@@ -1,8 +1,8 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ProfRate.Services;
+using LecRate.Services;
 
-namespace ProfRate.Controllers
+namespace LecRate.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

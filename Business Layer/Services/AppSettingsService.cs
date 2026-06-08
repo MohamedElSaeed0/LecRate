@@ -1,8 +1,8 @@
-using Microsoft.EntityFrameworkCore;
-using ProfRate.Data;
-using ProfRate.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using LecRate.Data;
+using LecRate.Entities;
 
-namespace ProfRate.Services
+namespace LecRate.Services
 {
 
 

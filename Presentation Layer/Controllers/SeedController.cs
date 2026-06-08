@@ -1,31 +1,25 @@
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ProfRate.Data;
-using ProfRate.Entities;
+using LecRate.Data;
+using LecRate.Entities;
+using LecRate.Services;
 
-namespace ProfRate.Controllers
+namespace LecRate.Controllers
 {
     [Route("api/seed")]
     [ApiController]
+    [Authorize(Roles = "Admin")]
     public class SeedController : ControllerBase
     {
         private readonly AppDbContext _context;
-        private const string HASH_SECRET = "EvalProf_AnonymousEval_2026_SecretKey";
+        private readonly string _hashSecret;
 
-        public SeedController(AppDbContext context)
+        public SeedController(AppDbContext context, IConfiguration configuration)
         {
             _context = context;
-        }
-
-        private string GenerateAnonymousHash(int studentId, int lecturerId, int subjectId, int questionId)
-        {
-            var raw = $"{studentId}|{lecturerId}|{subjectId}|{questionId}|{HASH_SECRET}";
-            using (var sha256 = System.Security.Cryptography.SHA256.Create())
-            {
-                var bytes = System.Text.Encoding.UTF8.GetBytes(raw);
-                var hashBytes = sha256.ComputeHash(bytes);
-                return Convert.ToHexString(hashBytes).ToLowerInvariant();
-            }
+            _hashSecret = configuration["AnonymousEval:SecretKey"]
+                ?? throw new InvalidOperationException("AnonymousEval:SecretKey غير موجود في الإعدادات");
         }
 
         [HttpGet]
@@ -256,7 +250,7 @@ namespace ProfRate.Controllers
                         
                         foreach (var q in questionsToAnswer)
                         {
-                            var hash = GenerateAnonymousHash(ss.StudentId, ss.LecturerId.Value, ss.SubjectId, q.QuestionId);
+                            var hash = AnonymousHashHelper.Generate(_hashSecret, ss.StudentId, ss.LecturerId.Value, ss.SubjectId, q.QuestionId);
                             
                             
                             if (!await _context.Evaluations.AnyAsync(e => e.AnonymousHash == hash && !e.IsArchived))

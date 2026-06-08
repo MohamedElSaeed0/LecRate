@@ -1,7 +1,7 @@
-using System.Net;
+﻿using System.Net;
 using System.Text.Json;
 
-namespace ProfRate.Middleware
+namespace LecRate.Middleware
 {
     public class ExceptionMiddleware
     {

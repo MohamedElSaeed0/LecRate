@@ -1,13 +1,13 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using ProfRate.Data;
-using ProfRate.DTOs;
-using ProfRate.Entities;
+using LecRate.Data;
+using LecRate.DTOs;
+using LecRate.Entities;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace ProfRate.Services
+namespace LecRate.Services
 {
     
     public class AuthService : IAuthService

@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace ProfRate.Migrations
+namespace LecRate.Migrations
 {
     
     public partial class AddPerformanceIndexes : Migration

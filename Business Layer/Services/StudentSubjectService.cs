@@ -1,9 +1,9 @@
-using Microsoft.EntityFrameworkCore;
-using ProfRate.Data;
-using ProfRate.DTOs;
-using ProfRate.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using LecRate.Data;
+using LecRate.DTOs;
+using LecRate.Entities;
 
-namespace ProfRate.Services
+namespace LecRate.Services
 {
     
     public class StudentSubjectService : IStudentSubjectService

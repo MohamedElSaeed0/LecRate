@@ -1,6 +1,6 @@
-﻿using ProfRate.DTOs;
+﻿using LecRate.DTOs;
 
-namespace ProfRate.Services
+namespace LecRate.Services
 {
     public interface IAuthService
     {

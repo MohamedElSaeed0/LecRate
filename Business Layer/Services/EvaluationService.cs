@@ -1,37 +1,26 @@
-using Microsoft.EntityFrameworkCore;
-using ProfRate.Data;
-using ProfRate.DTOs;
-using ProfRate.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using LecRate.Data;
+using LecRate.DTOs;
+using LecRate.Entities;
 
-namespace ProfRate.Services
+namespace LecRate.Services
 {
-    
     public class EvaluationService : IEvaluationService
     {
         private readonly AppDbContext _context;
+        private readonly string _hashSecret;
 
-        public EvaluationService(AppDbContext context)
+        public EvaluationService(AppDbContext context, IConfiguration configuration)
         {
             _context = context;
+            _hashSecret = configuration["AnonymousEval:SecretKey"]
+                ?? throw new InvalidOperationException("AnonymousEval:SecretKey غير موجود في الإعدادات");
         }
 
-        private const string HASH_SECRET = "EvalProf_AnonymousEval_2026_SecretKey";
-
-        private string GenerateAnonymousHash(int studentId, int lecturerId, int subjectId, int questionId)
+        public async Task<Evaluation> AddEvaluation(int studentId, EvaluationDTO dto)
         {
-            var raw = $"{studentId}|{lecturerId}|{subjectId}|{questionId}|{HASH_SECRET}";
-            using (var sha256 = System.Security.Cryptography.SHA256.Create())
-            {
-                var bytes = System.Text.Encoding.UTF8.GetBytes(raw);
-                var hashBytes = sha256.ComputeHash(bytes);
-                return Convert.ToHexString(hashBytes).ToLowerInvariant();
-            }
-        }
-
-        
-        public async Task<Evaluation> AddEvaluation(EvaluationDTO dto)
-        {
-            if (dto.StudentId <= 0 || dto.LecturerId <= 0 || dto.SubjectId <= 0 || dto.QuestionId <= 0)
+            if (studentId <= 0 || dto.LecturerId <= 0 || dto.SubjectId <= 0 || dto.QuestionId <= 0)
             {
                 throw new InvalidOperationException("بيانات التقييم غير مكتملة (معرفات غير صالحة).");
             }
@@ -41,10 +30,18 @@ namespace ProfRate.Services
                 throw new InvalidOperationException("الإجابة مطلوبة.");
             }
 
-            
-            var hash = GenerateAnonymousHash(dto.StudentId, dto.LecturerId, dto.SubjectId, dto.QuestionId);
+            var isEnrolled = await _context.StudentSubjects.AnyAsync(ss =>
+                ss.StudentId == studentId &&
+                ss.SubjectId == dto.SubjectId &&
+                ss.LecturerId == dto.LecturerId);
 
-            
+            if (!isEnrolled)
+            {
+                throw new InvalidOperationException("أنت غير مسجل في هذه المادة مع هذا المحاضر.");
+            }
+
+            var hash = AnonymousHashHelper.Generate(_hashSecret, studentId, dto.LecturerId, dto.SubjectId, dto.QuestionId);
+
             var exists = await _context.Evaluations
                 .AnyAsync(e => e.AnonymousHash == hash && !e.IsArchived);
 
@@ -68,8 +65,53 @@ namespace ProfRate.Services
             return evaluation;
         }
 
-        
-        
+        public async Task<int> GetStudentEvaluationCount(int studentId)
+        {
+            var enrollments = await _context.StudentSubjects.AsNoTracking()
+                .Where(ss => ss.StudentId == studentId && ss.LecturerId != null)
+                .ToListAsync();
+
+            if (!enrollments.Any())
+            {
+                return 0;
+            }
+
+            var questionIds = await _context.Questions.AsNoTracking()
+                .Select(q => q.QuestionId)
+                .ToListAsync();
+
+            if (!questionIds.Any())
+            {
+                return 0;
+            }
+
+            var activeHashes = (await _context.Evaluations.AsNoTracking()
+                .Where(e => !e.IsArchived)
+                .Select(e => e.AnonymousHash)
+                .ToListAsync()).ToHashSet();
+
+            var count = 0;
+            foreach (var enrollment in enrollments)
+            {
+                foreach (var questionId in questionIds)
+                {
+                    var hash = AnonymousHashHelper.Generate(
+                        _hashSecret,
+                        studentId,
+                        enrollment.LecturerId!.Value,
+                        enrollment.SubjectId,
+                        questionId);
+
+                    if (activeHashes.Contains(hash))
+                    {
+                        count++;
+                    }
+                }
+            }
+
+            return count;
+        }
+
         public async Task<bool> ResetEvaluations()
         {
             var activeEvaluations = await _context.Evaluations
@@ -78,13 +120,11 @@ namespace ProfRate.Services
 
             if (activeEvaluations.Any())
             {
-                
                 foreach (var eval in activeEvaluations)
                 {
                     eval.IsArchived = true;
                 }
 
-                
                 var lecturers = await _context.Lecturers.ToListAsync();
                 foreach (var lecturer in lecturers)
                 {
@@ -94,10 +134,10 @@ namespace ProfRate.Services
                 await _context.SaveChangesAsync();
                 return true;
             }
+
             return false;
         }
 
-        
         public async Task<List<EvaluationResponseDTO>> GetEvaluationsByLecturer(int lecturerId)
         {
             return await _context.Evaluations.AsNoTracking()
@@ -110,7 +150,7 @@ namespace ProfRate.Services
                     TextAnswer = e.TextAnswer,
                     IsArchived = e.IsArchived,
                     LecturerId = e.LecturerId,
-                    StudentName = "طالب", 
+                    StudentName = "طالب",
                     LecturerName = "",
                     SubjectName = e.Subject.SubjectName,
                     QuestionText = e.Question.QuestionText
@@ -118,7 +158,6 @@ namespace ProfRate.Services
                 .ToListAsync();
         }
 
-        
         public async Task<List<EvaluationReportDTO>> GetEvaluationReport()
         {
             var lecturers = await _context.Lecturers.AsNoTracking()
@@ -126,8 +165,8 @@ namespace ProfRate.Services
                 {
                     LecturerId = l.LecturerId,
                     LecturerName = l.Member.FirstName + " " + l.Member.LastName,
-                    SubjectName = "", 
-                    AverageRating = l.AdminRating ?? 0, 
+                    SubjectName = "",
+                    AverageRating = l.AdminRating ?? 0,
                     TotalEvaluations = _context.Evaluations.Count(e => e.LecturerId == l.LecturerId && !e.IsArchived)
                 })
                 .ToListAsync();
@@ -135,7 +174,6 @@ namespace ProfRate.Services
             return lecturers;
         }
 
-        
         public async Task<List<EvaluationResponseDTO>> GetAllEvaluations()
         {
             return await _context.Evaluations.AsNoTracking()

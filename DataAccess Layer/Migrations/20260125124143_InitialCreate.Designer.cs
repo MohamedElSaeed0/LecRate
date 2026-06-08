@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using ProfRate.Data;
+using LecRate.Data;
 
 #nullable disable
 
-namespace ProfRate.Migrations
+namespace LecRate.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     [Migration("20260125124143_InitialCreate")]
@@ -24,7 +24,7 @@ namespace ProfRate.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ProfRate.Entities.Admin", b =>
+            modelBuilder.Entity("LecRate.Entities.Admin", b =>
                 {
                     b.Property<int>("AdminId")
                         .ValueGeneratedOnAdd()
@@ -53,7 +53,7 @@ namespace ProfRate.Migrations
                     b.ToTable("Admins");
                 });
 
-            modelBuilder.Entity("ProfRate.Entities.Evaluation", b =>
+            modelBuilder.Entity("LecRate.Entities.Evaluation", b =>
                 {
                     b.Property<int>("EvaluationId")
                         .ValueGeneratedOnAdd()
@@ -89,7 +89,7 @@ namespace ProfRate.Migrations
                     b.ToTable("Evaluations");
                 });
 
-            modelBuilder.Entity("ProfRate.Entities.Lecturer", b =>
+            modelBuilder.Entity("LecRate.Entities.Lecturer", b =>
                 {
                     b.Property<int>("LecturerId")
                         .ValueGeneratedOnAdd()
@@ -123,7 +123,7 @@ namespace ProfRate.Migrations
                     b.ToTable("Lecturers");
                 });
 
-            modelBuilder.Entity("ProfRate.Entities.LecturerSubject", b =>
+            modelBuilder.Entity("LecRate.Entities.LecturerSubject", b =>
                 {
                     b.Property<int>("LecturerSubjectId")
                         .ValueGeneratedOnAdd()
@@ -146,7 +146,7 @@ namespace ProfRate.Migrations
                     b.ToTable("LecturerSubjects");
                 });
 
-            modelBuilder.Entity("ProfRate.Entities.Question", b =>
+            modelBuilder.Entity("LecRate.Entities.Question", b =>
                 {
                     b.Property<int>("QuestionId")
                         .ValueGeneratedOnAdd()
@@ -168,7 +168,7 @@ namespace ProfRate.Migrations
                     b.ToTable("Questions");
                 });
 
-            modelBuilder.Entity("ProfRate.Entities.Student", b =>
+            modelBuilder.Entity("LecRate.Entities.Student", b =>
                 {
                     b.Property<int>("StudentId")
                         .ValueGeneratedOnAdd()
@@ -202,7 +202,7 @@ namespace ProfRate.Migrations
                     b.ToTable("Students");
                 });
 
-            modelBuilder.Entity("ProfRate.Entities.StudentSubject", b =>
+            modelBuilder.Entity("LecRate.Entities.StudentSubject", b =>
                 {
                     b.Property<int>("StudentSubjectId")
                         .ValueGeneratedOnAdd()
@@ -225,7 +225,7 @@ namespace ProfRate.Migrations
                     b.ToTable("StudentSubjects");
                 });
 
-            modelBuilder.Entity("ProfRate.Entities.Subject", b =>
+            modelBuilder.Entity("LecRate.Entities.Subject", b =>
                 {
                     b.Property<int>("SubjectId")
                         .ValueGeneratedOnAdd()
@@ -242,27 +242,27 @@ namespace ProfRate.Migrations
                     b.ToTable("Subjects");
                 });
 
-            modelBuilder.Entity("ProfRate.Entities.Evaluation", b =>
+            modelBuilder.Entity("LecRate.Entities.Evaluation", b =>
                 {
-                    b.HasOne("ProfRate.Entities.Lecturer", "Lecturer")
+                    b.HasOne("LecRate.Entities.Lecturer", "Lecturer")
                         .WithMany("Evaluations")
                         .HasForeignKey("LecturerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("ProfRate.Entities.Question", "Question")
+                    b.HasOne("LecRate.Entities.Question", "Question")
                         .WithMany("Evaluations")
                         .HasForeignKey("QuestionId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("ProfRate.Entities.Student", "Student")
+                    b.HasOne("LecRate.Entities.Student", "Student")
                         .WithMany("Evaluations")
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("ProfRate.Entities.Subject", "Subject")
+                    b.HasOne("LecRate.Entities.Subject", "Subject")
                         .WithMany("Evaluations")
                         .HasForeignKey("SubjectId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -277,9 +277,9 @@ namespace ProfRate.Migrations
                     b.Navigation("Subject");
                 });
 
-            modelBuilder.Entity("ProfRate.Entities.Lecturer", b =>
+            modelBuilder.Entity("LecRate.Entities.Lecturer", b =>
                 {
-                    b.HasOne("ProfRate.Entities.Admin", "Admin")
+                    b.HasOne("LecRate.Entities.Admin", "Admin")
                         .WithMany("Lecturers")
                         .HasForeignKey("AdminId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -288,15 +288,15 @@ namespace ProfRate.Migrations
                     b.Navigation("Admin");
                 });
 
-            modelBuilder.Entity("ProfRate.Entities.LecturerSubject", b =>
+            modelBuilder.Entity("LecRate.Entities.LecturerSubject", b =>
                 {
-                    b.HasOne("ProfRate.Entities.Lecturer", "Lecturer")
+                    b.HasOne("LecRate.Entities.Lecturer", "Lecturer")
                         .WithMany("LecturerSubjects")
                         .HasForeignKey("LecturerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("ProfRate.Entities.Subject", "Subject")
+                    b.HasOne("LecRate.Entities.Subject", "Subject")
                         .WithMany("LecturerSubjects")
                         .HasForeignKey("SubjectId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -307,9 +307,9 @@ namespace ProfRate.Migrations
                     b.Navigation("Subject");
                 });
 
-            modelBuilder.Entity("ProfRate.Entities.Question", b =>
+            modelBuilder.Entity("LecRate.Entities.Question", b =>
                 {
-                    b.HasOne("ProfRate.Entities.Admin", "Admin")
+                    b.HasOne("LecRate.Entities.Admin", "Admin")
                         .WithMany("Questions")
                         .HasForeignKey("AdminId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -318,9 +318,9 @@ namespace ProfRate.Migrations
                     b.Navigation("Admin");
                 });
 
-            modelBuilder.Entity("ProfRate.Entities.Student", b =>
+            modelBuilder.Entity("LecRate.Entities.Student", b =>
                 {
-                    b.HasOne("ProfRate.Entities.Admin", "Admin")
+                    b.HasOne("LecRate.Entities.Admin", "Admin")
                         .WithMany("Students")
                         .HasForeignKey("AdminId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -329,15 +329,15 @@ namespace ProfRate.Migrations
                     b.Navigation("Admin");
                 });
 
-            modelBuilder.Entity("ProfRate.Entities.StudentSubject", b =>
+            modelBuilder.Entity("LecRate.Entities.StudentSubject", b =>
                 {
-                    b.HasOne("ProfRate.Entities.Student", "Student")
+                    b.HasOne("LecRate.Entities.Student", "Student")
                         .WithMany("StudentSubjects")
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("ProfRate.Entities.Subject", "Subject")
+                    b.HasOne("LecRate.Entities.Subject", "Subject")
                         .WithMany("StudentSubjects")
                         .HasForeignKey("SubjectId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -348,7 +348,7 @@ namespace ProfRate.Migrations
                     b.Navigation("Subject");
                 });
 
-            modelBuilder.Entity("ProfRate.Entities.Admin", b =>
+            modelBuilder.Entity("LecRate.Entities.Admin", b =>
                 {
                     b.Navigation("Lecturers");
 
@@ -357,26 +357,26 @@ namespace ProfRate.Migrations
                     b.Navigation("Students");
                 });
 
-            modelBuilder.Entity("ProfRate.Entities.Lecturer", b =>
+            modelBuilder.Entity("LecRate.Entities.Lecturer", b =>
                 {
                     b.Navigation("Evaluations");
 
                     b.Navigation("LecturerSubjects");
                 });
 
-            modelBuilder.Entity("ProfRate.Entities.Question", b =>
+            modelBuilder.Entity("LecRate.Entities.Question", b =>
                 {
                     b.Navigation("Evaluations");
                 });
 
-            modelBuilder.Entity("ProfRate.Entities.Student", b =>
+            modelBuilder.Entity("LecRate.Entities.Student", b =>
                 {
                     b.Navigation("Evaluations");
 
                     b.Navigation("StudentSubjects");
                 });
 
-            modelBuilder.Entity("ProfRate.Entities.Subject", b =>
+            modelBuilder.Entity("LecRate.Entities.Subject", b =>
                 {
                     b.Navigation("Evaluations");
 

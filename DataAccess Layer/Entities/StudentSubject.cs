@@ -1,4 +1,4 @@
-namespace ProfRate.Entities
+﻿namespace LecRate.Entities
 {
     
     public class StudentSubject

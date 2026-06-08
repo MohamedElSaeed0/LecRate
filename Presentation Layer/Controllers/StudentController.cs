@@ -1,9 +1,9 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ProfRate.DTOs;
-using ProfRate.Services;
+using LecRate.DTOs;
+using LecRate.Services;
 
-namespace ProfRate.Controllers
+namespace LecRate.Controllers
 {
     [Route("api/students")]
     [ApiController]
@@ -19,7 +19,7 @@ namespace ProfRate.Controllers
         
         [HttpGet]
         [Route("GetAll")]
-        [Authorize] 
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllStudents([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
         {
             if (page < 1) page = 1;
@@ -51,7 +51,7 @@ namespace ProfRate.Controllers
         
         [HttpGet]
         [Route("Search")]
-        [Authorize] 
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Search([FromQuery] string query)
         {
             var students = await _studentService.Search(query);

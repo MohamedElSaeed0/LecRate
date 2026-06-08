@@ -1,8 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
-using ProfRate.DTOs;
-using ProfRate.Services;
+﻿using Microsoft.AspNetCore.Mvc;
+using LecRate.DTOs;
+using LecRate.Services;
 using Microsoft.AspNetCore.RateLimiting;
-namespace ProfRate.Controllers
+namespace LecRate.Controllers
 {
     [Route("api/auth")]
     [ApiController]

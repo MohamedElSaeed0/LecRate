@@ -18,3 +18,7 @@ obj/
 all code.txt
 fullcode.txt
 *.log
+
+# Local secrets
+appsettings.Development.json
+appsettings.*.local.json

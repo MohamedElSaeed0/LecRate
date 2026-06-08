@@ -1,5 +1,5 @@
 ﻿
-namespace ProfRate.Services
+namespace LecRate.Services
 {
     public interface IAppSettingsService
     {

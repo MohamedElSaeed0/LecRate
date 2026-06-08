@@ -1,6 +1,6 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace ProfRate.DTOs
+namespace LecRate.DTOs
 {
     
     public class StudentDTO
@@ -85,9 +85,7 @@ namespace ProfRate.DTOs
         [Required(ErrorMessage = "الإجابة مطلوبة")]
         [MaxLength(400, ErrorMessage = "الإجابة يجب أن لا تتجاوز 400 حرف")]
         public string TextAnswer { get; set; } = string.Empty;
-        
-        [Required]
-        public int StudentId { get; set; }
+
         [Required]
         public int QuestionId { get; set; }
         [Required]

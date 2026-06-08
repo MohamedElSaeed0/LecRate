@@ -1,6 +1,6 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace ProfRate.Entities
+namespace LecRate.Entities
 {
     
     public class Lecturer
@@ -33,6 +33,7 @@ namespace ProfRate.Entities
         [System.ComponentModel.DataAnnotations.Schema.NotMapped]
         public string Username => Member?.Username ?? string.Empty;
         [System.ComponentModel.DataAnnotations.Schema.NotMapped]
+        [System.Text.Json.Serialization.JsonIgnore]
         public string Password => Member?.Password ?? string.Empty;
         [System.ComponentModel.DataAnnotations.Schema.NotMapped]
         public string Gender => Member != null ? (Member.Gender == 0 ? "Male" : "Female") : "Male";

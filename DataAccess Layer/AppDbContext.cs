@@ -1,7 +1,7 @@
-using Microsoft.EntityFrameworkCore;
-using ProfRate.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using LecRate.Entities;
 
-namespace ProfRate.Data
+namespace LecRate.Data
 {
     
     public class AppDbContext : DbContext

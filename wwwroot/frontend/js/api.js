@@ -128,6 +128,7 @@ const SubjectsAPI = {
 const EvaluationsAPI = {
     getAll: () => apiCall('/evaluations/GetAll'),
     getReport: () => apiCall('/evaluations/GetReport'),
+    getMyCount: () => apiCall('/evaluations/GetMyCount'),
     add: (data) => apiCall('/evaluations/Add', 'POST', data)
 };
 

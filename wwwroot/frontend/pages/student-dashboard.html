@@ -190,11 +190,9 @@
                     document.getElementById('totalLecturers').textContent = '0';
                 }
 
-                const evaluations = await EvaluationsAPI.getAll();
-                if (evaluations && evaluations.success) {
-                    const studentId = localStorage.getItem('userId');
-                    const myEvals = evaluations.data.filter(e => e.studentId == studentId);
-                    animateValue("myEvaluations", 0, myEvals.length, 1000);
+                const myCount = await EvaluationsAPI.getMyCount();
+                if (myCount && myCount.success) {
+                    animateValue("myEvaluations", 0, myCount.data.count || 0, 1000);
                 } else {
                     document.getElementById('myEvaluations').textContent = '0';
                 }

@@ -1,4 +1,4 @@
-namespace ProfRate.DTOs
+﻿namespace LecRate.DTOs
 {
     
     public class LoginDTO

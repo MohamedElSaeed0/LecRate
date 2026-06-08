@@ -1,7 +1,7 @@
-﻿using ProfRate.DTOs;
-using ProfRate.Entities;
+﻿using LecRate.DTOs;
+using LecRate.Entities;
 
-namespace ProfRate.Services
+namespace LecRate.Services
 {
     public interface ISubjectService
     {
